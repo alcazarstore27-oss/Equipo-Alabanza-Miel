@@ -28,7 +28,7 @@ let services = JSON.parse(localStorage.getItem("services")) || [];
 
 let currentSongId = null;
 let currentServiceId = "";
-let dragId = null;
+let draggedSongId = null;
 
 // ===== GUARDAR =====
 function saveData() {
@@ -52,12 +52,11 @@ function renderServices() {
   });
 }
 
-// ===== LISTA DE CANCIONES =====
+// ===== LISTA PRINCIPAL =====
 function renderSongs() {
   songList.innerHTML = "";
 
   let list = songs;
-
   if (currentServiceId) {
     const srv = services.find(s => s.id === currentServiceId);
     if (srv) {
@@ -82,7 +81,6 @@ function openEditor(id) {
   if (!song) return;
 
   currentSongId = id;
-
   editorTitle.textContent = song.title;
   editorText.value = song.content || "";
   songType.value = song.type || "";
@@ -102,21 +100,19 @@ saveBtn.onclick = () => {
   const song = songs.find(s => s.id === currentSongId);
   if (!song) return;
 
-  const previousService = song.serviceId;
+  const prevService = song.serviceId;
 
   song.content = editorText.value;
   song.type = songType.value;
   song.serviceId = songService.value;
 
-  // quitar de servicio anterior
-  if (previousService) {
-    const oldSrv = services.find(s => s.id === previousService);
+  if (prevService) {
+    const oldSrv = services.find(s => s.id === prevService);
     if (oldSrv) {
       oldSrv.order = oldSrv.order.filter(id => id !== song.id);
     }
   }
 
-  // agregar a nuevo servicio
   if (song.serviceId) {
     const srv = services.find(s => s.id === song.serviceId);
     if (srv && !srv.order.includes(song.id)) {
@@ -162,27 +158,22 @@ newServiceBtn.onclick = () => {
   renderServices();
 };
 
-// ===== ELIMINAR SERVICIO (SIN BORRAR CANCIONES) =====
+// ===== ELIMINAR SERVICIO =====
 deleteServiceBtn.onclick = () => {
   if (!currentServiceId) {
-    alert("Selecciona un servicio para eliminar");
+    alert("Selecciona un servicio");
     return;
   }
 
-  if (!confirm("¿Eliminar este servicio? Las canciones quedarán sin asignar.")) {
-    return;
-  }
+  if (!confirm("¿Eliminar este servicio?")) return;
 
-  // dejar canciones sin asignar
   songs.forEach(song => {
     if (song.serviceId === currentServiceId) {
       song.serviceId = "";
     }
   });
 
-  // eliminar servicio
   services = services.filter(s => s.id !== currentServiceId);
-
   currentServiceId = "";
 
   saveData();
@@ -190,13 +181,13 @@ deleteServiceBtn.onclick = () => {
   renderSongs();
 };
 
-// ===== SELECCIONAR SERVICIO =====
+// ===== SELECCIÓN DE SERVICIO =====
 serviceSelect.onchange = e => {
   currentServiceId = e.target.value;
   renderSongs();
 };
 
-// ===== SERVICIO EN VIVO =====
+// ===== SERVICIO EN VIVO (ORDENABLE) =====
 serviceLiveBtn.onclick = () => {
   if (!currentServiceId) {
     alert("Selecciona un servicio");
@@ -222,16 +213,31 @@ function renderServiceSongs() {
     div.textContent = song.title;
     div.draggable = true;
 
-    div.ondragstart = () => dragId = id;
-    div.ondragover = e => e.preventDefault();
-    div.ondrop = () => {
-      const from = srv.order.indexOf(dragId);
-      const to = srv.order.indexOf(id);
-      srv.order.splice(to, 0, srv.order.splice(from, 1)[0]);
-      saveData();
-      renderServiceSongs();
-    };
+    div.addEventListener("dragstart", () => {
+      draggedSongId = id;
+      div.classList.add("dragging");
+    });
 
+    div.addEventListener("dragend", () => {
+      div.classList.remove("dragging");
+    });
+
+    div.addEventListener("dragover", e => {
+      e.preventDefault();
+    });
+
+    div.addEventListener("drop", () => {
+      const from = srv.order.indexOf(draggedSongId);
+      const to = srv.order.indexOf(id);
+
+      if (from !== to) {
+        srv.order.splice(to, 0, srv.order.splice(from, 1)[0]);
+        saveData();
+        renderServiceSongs();
+      }
+    });
+
+    // tocar canción → mostrar en vivo
     div.onclick = () => {
       liveContent.textContent = song.content || "";
       liveView.classList.remove("hidden");
@@ -241,7 +247,7 @@ function renderServiceSongs() {
   });
 }
 
-// ===== EN VIVO =====
+// ===== MODO EN VIVO =====
 liveView.onclick = () => {
   liveView.classList.add("hidden");
 };
@@ -255,4 +261,5 @@ exitServiceBtn.onclick = () => {
 // ===== INIT =====
 renderServices();
 renderSongs();
+
 
