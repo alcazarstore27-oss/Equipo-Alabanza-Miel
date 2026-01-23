@@ -3,42 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Equipo Alabanza Miel</title>
 
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="styles.css">
-
   <meta name="theme-color" content="#3FB4E5">
 </head>
 <body>
 
-  <!-- ENCABEZADO -->
-  <div class="header">
-    <img src="icons/logo.png" alt="Logo Equipo Alabanza Miel" class="logo">
+  <!-- HEADER -->
+  <header class="header">
+    <img src="icons/logo.png" class="logo" alt="Logo">
     <h1>Equipo Alabanza Miel</h1>
-  </div>
+  </header>
 
-  <!-- CONTROLES -->
-  <div class="controls">
-    <button id="newNoteBtn">➕ Nueva Canción</button>
-    <button id="newServiceBtn">📅 Nuevo Servicio</button>
-    <select id="serviceSelect">
-      <option value="">— Ver todas las canciones —</option>
-    </select>
-    <button id="altarModeBtn">🎹 Activar Modo Altar</button>
-  </div>
+  <!-- BARRA DE ACCIONES -->
+  <section class="actions">
+    <input type="text" id="searchInput" placeholder="🔍 Buscar canción">
+    <button id="newSongBtn">➕ Nueva Canción</button>
+    <button id="altarBtn">🎹 En Vivo</button>
+  </section>
+
+  <!-- LISTA DE CANCIONES -->
+  <main id="songList"></main>
 
   <!-- EDITOR -->
-  <div id="editor" class="editor hidden">
+  <section id="editor" class="editor hidden">
     <h2 id="editorTitle"></h2>
-    <textarea id="editorContent" placeholder="Escribe la estructura, acordes y notas aquí..."></textarea>
-    <button id="saveNoteBtn">💾 Guardar</button>
-    <button id="closeEditorBtn">⬅️ Volver</button>
-  </div>
-
-  <!-- LISTA -->
-  <div id="notesList"></div>
+    <textarea id="editorText" placeholder="Escribe aquí la estructura, acordes y notas..."></textarea>
+    <button id="saveBtn">💾 Guardar</button>
+    <button id="backBtn">⬅ Volver</button>
+  </section>
 
   <script src="app.js"></script>
 
