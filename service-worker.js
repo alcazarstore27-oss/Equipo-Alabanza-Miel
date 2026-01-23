@@ -1,4 +1,4 @@
-const CACHE_NAME = "equipo-alabanza-miel-v5";
+const CACHE_NAME = "equipo-alabanza-miel-v6";
 
 const FILES_TO_CACHE = [
   "./",
@@ -35,7 +35,7 @@ self.addEventListener("activate", event => {
   self.clients.claim();
 });
 
-// ===== OFFLINE FIRST =====
+// ===== FETCH =====
 self.addEventListener("fetch", event => {
   event.respondWith(
     caches.match(event.request).then(response => {
@@ -43,4 +43,3 @@ self.addEventListener("fetch", event => {
     })
   );
 });
-;
