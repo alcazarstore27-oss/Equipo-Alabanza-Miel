@@ -11,11 +11,10 @@ body {
 }
 
 .logo {
-  width: 120px;
-  margin-bottom: 8px;
+  width: 110px;
+  margin-bottom: 6px;
 }
 
-.actions input,
 .actions button,
 .actions select {
   width: 100%;
@@ -24,11 +23,6 @@ body {
   font-size: 16px;
   border-radius: 10px;
   border: none;
-}
-
-.actions input,
-.actions select {
-  color: #333;
 }
 
 .actions button {
@@ -42,28 +36,23 @@ button.danger {
   color: white;
 }
 
+.block-title {
+  margin-top: 20px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
 .song {
   background: white;
   color: black;
   padding: 14px;
-  border-radius: 12px;
-  margin-bottom: 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  cursor: grab;
 }
 
-.song-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.song h3 {
-  margin: 0;
-}
-
-.order-buttons button {
-  padding: 6px 10px;
-  margin-left: 6px;
-  font-size: 14px;
+.song.dragging {
+  opacity: 0.5;
 }
 
 .editor {
@@ -80,11 +69,6 @@ button.danger {
   font-size: 16px;
 }
 
-#serviceCheckboxes label {
-  display: block;
-  margin-bottom: 6px;
-}
-
 .hidden {
   display: none;
 }
@@ -92,13 +76,10 @@ button.danger {
 /* MODO EN VIVO */
 body.altar .header,
 body.altar .actions,
-body.altar .editor,
-body.altar .order-buttons {
+body.altar .editor {
   display: none;
 }
 
 body.altar .song {
   font-size: 22px;
-  line-height: 1.6;
 }
-
