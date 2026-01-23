@@ -102,8 +102,62 @@ function openEditor(id) {
   editorText.value = song.content || "";
   songType.value = song.type || "";
 
+  renderEditorServices();
+
   songList.classList.add("hidden");
   editor.classList.remove("hidden");
+}
+
+function renderEditorServices() {
+  // elimina selector previo si existe
+  const old = document.getElementById("editorServiceBlock");
+  if (old) old.remove();
+
+  if (!services.length) return;
+
+  const container = document.createElement("div");
+  container.id = "editorServiceBlock";
+
+  const label = document.createElement("label");
+  label.innerHTML = "<strong>Servicio</strong>";
+
+  const select = document.createElement("select");
+  select.id = "editorServiceSelect";
+
+  services.forEach(s => {
+    const opt = document.createElement("option");
+    opt.value = s.id;
+    opt.textContent = s.date;
+    select.appendChild(opt);
+  });
+
+  const btn = document.createElement("button");
+  btn.textContent = "➕ / ➖ Agregar o quitar del servicio";
+
+  btn.onclick = () => {
+    const serviceId = select.value;
+    const srv = services.find(s => s.id === serviceId);
+    if (!srv) return;
+
+    const index = srv.order.indexOf(currentSongId);
+
+    if (index === -1) {
+      srv.order.push(currentSongId);
+      alert("Canción agregada al servicio");
+    } else {
+      srv.order.splice(index, 1);
+      alert("Canción quitada del servicio");
+    }
+
+    saveData();
+    renderSongs();
+  };
+
+  container.appendChild(label);
+  container.appendChild(select);
+  container.appendChild(btn);
+
+  editor.insertBefore(container, editorText);
 }
 
 function closeEditor() {
@@ -141,8 +195,6 @@ newSongBtn.onclick = () => {
   songs.push(newSong);
   saveData();
   renderSongs();
-
-  // 👉 ABRIR DIRECTAMENTE EL EDITOR
   openEditor(newSong.id);
 };
 
@@ -154,14 +206,14 @@ newServiceBtn.onclick = () => {
   services.push({
     id: Date.now().toString(),
     date,
-    order: songs.map(s => s.id)
+    order: []
   });
 
   saveData();
   renderServices();
 };
 
-// ===== FILTRO POR SERVICIO =====
+// ===== FILTRO =====
 serviceSelect.onchange = e => {
   currentService = e.target.value;
   renderSongs();
@@ -180,3 +232,4 @@ exitLive.onclick = () => {
 // ===== INICIO =====
 renderServices();
 renderSongs();
+
