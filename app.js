@@ -43,20 +43,24 @@ function renderSongs() {
   let list = songs;
   if (currentService) {
     const srv = services.find(s => s.id === currentService);
-    list = srv.order.map(id => songs.find(s => s.id === id));
+    if (!srv) return;
+    list = srv.order.map(id => songs.find(s => s.id === id)).filter(Boolean);
   }
 
   const alab = list.filter(s => s.type === "alabanza");
   const ador = list.filter(s => s.type === "adoracion");
+  const sinTipo = list.filter(s => !s.type);
 
   renderBlock("🎶 Alabanza", alab);
   renderBlock("🙏 Adoración", ador);
+  renderBlock("📌 Sin clasificar", sinTipo);
 }
 
 function renderBlock(title, list) {
   if (!list.length) return;
 
   const h = document.createElement("h3");
+  h.className = "block-title";
   h.textContent = title;
   songList.appendChild(h);
 
@@ -80,6 +84,8 @@ function renderBlock(title, list) {
 
 function openEditor(id) {
   const song = songs.find(s => s.id === id);
+  if (!song) return;
+
   currentSongId = id;
 
   editorTitle.textContent = song.title;
@@ -90,8 +96,15 @@ function openEditor(id) {
   songList.classList.add("hidden");
 }
 
+function closeEditor() {
+  editor.classList.add("hidden");
+  songList.classList.remove("hidden");
+}
+
 saveBtn.onclick = () => {
   const song = songs.find(s => s.id === currentSongId);
+  if (!song) return;
+
   song.content = editorText.value;
   song.type = songType.value;
 
@@ -100,26 +113,26 @@ saveBtn.onclick = () => {
   renderSongs();
 };
 
-function closeEditor() {
-  editor.classList.add("hidden");
-  songList.classList.remove("hidden");
-}
-
 backBtn.onclick = closeEditor;
 
+// ✅ AQUÍ ESTABA EL PROBLEMA
 newSongBtn.onclick = () => {
   const title = prompt("Nombre de la canción");
   if (!title) return;
 
-  songs.push({
+  const newSong = {
     id: Date.now().toString(),
     title,
     type: "",
     content: ""
-  });
+  };
 
+  songs.push(newSong);
   saveData();
   renderSongs();
+
+  // 👉 ABRIR EDITOR AUTOMÁTICAMENTE
+  openEditor(newSong.id);
 };
 
 newServiceBtn.onclick = () => {
