@@ -78,13 +78,26 @@ button.danger {
   display: none;
 }
 
-/* MODO ALTAR */
-body.altar .header,
-body.altar .actions,
-body.altar .editor {
-  display: none;
+/* ===== MODO EN VIVO ===== */
+.live {
+  position: fixed;
+  inset: 0;
+  background: black;
+  color: white;
+  padding: 20px;
+  z-index: 1000;
 }
 
-body.altar .song {
+.live pre {
+  white-space: pre-wrap;
   font-size: 22px;
+  line-height: 1.6;
+}
+
+.live button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 18px;
+  font-size: 18px;
 }
