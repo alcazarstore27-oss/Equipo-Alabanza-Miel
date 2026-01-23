@@ -37,6 +37,11 @@ body {
   font-weight: bold;
 }
 
+button.danger {
+  background: #e53935;
+  color: white;
+}
+
 .song {
   background: white;
   color: black;
@@ -73,7 +78,7 @@ body {
   display: none;
 }
 
-/* MODO EN VIVO */
+/* ===== MODO EN VIVO ===== */
 body.altar .header,
 body.altar .actions,
 body.altar .editor {
