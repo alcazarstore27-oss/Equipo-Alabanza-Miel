@@ -1,7 +1,7 @@
 {
   "name": "Equipo Alabanza Miel",
   "short_name": "Alabanza Miel",
-  "description": "App de canciones y servicios para el equipo de alabanza",
+  "description": "Canciones, notas y servicios para el equipo de alabanza",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#3FB4E5",
