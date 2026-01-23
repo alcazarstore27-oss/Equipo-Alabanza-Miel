@@ -7,7 +7,7 @@ const altarBtn = document.getElementById("altarBtn");
 const editor = document.getElementById("editor");
 const editorTitle = document.getElementById("editorTitle");
 const editorText = document.getElementById("editorText");
-const songTypeSelect = document.getElementById("songType");
+const songType = document.getElementById("songType");
 const saveBtn = document.getElementById("saveBtn");
 const backBtn = document.getElementById("backBtn");
 
@@ -22,15 +22,13 @@ let currentSongId = null;
 let currentService = "";
 let altarMode = false;
 
-function saveAll() {
+function saveData() {
   localStorage.setItem("songs", JSON.stringify(songs));
   localStorage.setItem("services", JSON.stringify(services));
 }
 
 function renderServices() {
-  serviceSelect.innerHTML =
-    `<option value="">— Ver todas las canciones —</option>`;
-
+  serviceSelect.innerHTML = `<option value="">— Ver todas —</option>`;
   services.forEach(s => {
     const opt = document.createElement("option");
     opt.value = s.id;
@@ -44,19 +42,19 @@ function renderSongs() {
 
   let list = songs;
   if (currentService) {
-    const service = services.find(s => s.id === currentService);
-    list = service.order.map(id => songs.find(s => s.id === id));
+    const srv = services.find(s => s.id === currentService);
+    list = srv.order.map(id => songs.find(s => s.id === id));
   }
 
-  const alabanza = list.filter(s => s.type === "alabanza");
-  const adoracion = list.filter(s => s.type === "adoracion");
+  const alab = list.filter(s => s.type === "alabanza");
+  const ador = list.filter(s => s.type === "adoracion");
 
-  renderBlock("🎶 Alabanza", alabanza);
-  renderBlock("🙏 Adoración", adoracion);
+  renderBlock("🎶 Alabanza", alab);
+  renderBlock("🙏 Adoración", ador);
 }
 
 function renderBlock(title, list) {
-  if (list.length === 0) return;
+  if (!list.length) return;
 
   const h = document.createElement("h3");
   h.textContent = title;
@@ -85,8 +83,8 @@ function openEditor(id) {
   currentSongId = id;
 
   editorTitle.textContent = song.title;
-  editorText.value = song.content;
-  songTypeSelect.value = song.type || "";
+  editorText.value = song.content || "";
+  songType.value = song.type || "";
 
   editor.classList.remove("hidden");
   songList.classList.add("hidden");
@@ -95,22 +93,22 @@ function openEditor(id) {
 saveBtn.onclick = () => {
   const song = songs.find(s => s.id === currentSongId);
   song.content = editorText.value;
-  song.type = songTypeSelect.value;
+  song.type = songType.value;
 
-  saveAll();
+  saveData();
   closeEditor();
   renderSongs();
 };
-
-backBtn.onclick = closeEditor;
 
 function closeEditor() {
   editor.classList.add("hidden");
   songList.classList.remove("hidden");
 }
 
+backBtn.onclick = closeEditor;
+
 newSongBtn.onclick = () => {
-  const title = prompt("Nombre de la canción:");
+  const title = prompt("Nombre de la canción");
   if (!title) return;
 
   songs.push({
@@ -120,21 +118,21 @@ newSongBtn.onclick = () => {
     content: ""
   });
 
-  saveAll();
+  saveData();
   renderSongs();
 };
 
 newServiceBtn.onclick = () => {
-  const date = prompt("Fecha del servicio:");
+  const date = prompt("Fecha del servicio");
   if (!date) return;
 
   services.push({
     id: Date.now().toString(),
     date,
-    order: []
+    order: songs.map(s => s.id)
   });
 
-  saveAll();
+  saveData();
   renderServices();
 };
 
