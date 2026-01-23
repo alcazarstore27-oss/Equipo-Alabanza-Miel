@@ -1,67 +1,73 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #3FB4E5;
+  background: #3FB4E5;
   color: white;
-  padding: 20px;
+  padding: 16px;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 20px;
 }
 
 .logo {
-  width: 140px;
-  margin-bottom: 10px;
+  width: 120px;
+  margin-bottom: 8px;
 }
 
-.controls {
-  margin-bottom: 20px;
+.actions {
+  margin: 20px 0;
 }
 
-button, select {
+.actions input,
+.actions button {
   width: 100%;
-  padding: 12px;
-  font-size: 16px;
+  padding: 14px;
   margin-bottom: 10px;
-  border-radius: 8px;
+  font-size: 16px;
+  border-radius: 10px;
   border: none;
 }
 
-button {
+.actions input {
+  color: #333;
+}
+
+.actions button {
   background: white;
   color: #3FB4E5;
   font-weight: bold;
 }
 
-select {
+.song {
   background: white;
-  color: #333;
+  color: black;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  cursor: pointer;
 }
 
-.note {
-  background: white;
-  color: #000;
-  padding: 16px;
-  margin-bottom: 14px;
-  border-radius: 10px;
-  cursor: pointer;
+.song h3 {
+  margin: 0;
+}
+
+.song p {
+  margin-top: 6px;
+  color: #444;
 }
 
 .editor {
   background: white;
-  color: #000;
+  color: black;
   padding: 16px;
-  border-radius: 10px;
-  margin-bottom: 20px;
+  border-radius: 12px;
 }
 
 .editor textarea {
   width: 100%;
-  height: 220px;
+  height: 250px;
   font-size: 16px;
-  padding: 10px;
   margin-bottom: 10px;
 }
 
@@ -69,19 +75,14 @@ select {
   display: none;
 }
 
-/* ===== MODO ALTAR ===== */
-
-body.altar-mode .controls,
-body.altar-mode .header,
-body.altar-mode .editor {
+/* ===== MODO EN VIVO ===== */
+body.altar .header,
+body.altar .actions,
+body.altar .editor {
   display: none;
 }
 
-body.altar-mode .note {
+body.altar .song {
   font-size: 22px;
   line-height: 1.6;
-}
-
-body.altar-mode .note h3 {
-  font-size: 28px;
 }
