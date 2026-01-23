@@ -17,20 +17,29 @@
     <h1>Equipo Alabanza Miel</h1>
   </header>
 
-  <!-- BARRA DE ACCIONES -->
+  <!-- ACCIONES -->
   <section class="actions">
     <input type="text" id="searchInput" placeholder="🔍 Buscar canción">
     <button id="newSongBtn">➕ Nueva Canción</button>
+
+    <button id="newServiceBtn">📅 Nuevo Servicio</button>
+    <select id="serviceSelect">
+      <option value="">— Ver todas las canciones —</option>
+    </select>
+
     <button id="altarBtn">🎹 En Vivo</button>
   </section>
 
-  <!-- LISTA DE CANCIONES -->
+  <!-- LISTA -->
   <main id="songList"></main>
 
   <!-- EDITOR -->
   <section id="editor" class="editor hidden">
     <h2 id="editorTitle"></h2>
-    <textarea id="editorText" placeholder="Escribe aquí la estructura, acordes y notas..."></textarea>
+    <textarea id="editorText" placeholder="Estructura, acordes y notas..."></textarea>
+
+    <div id="serviceCheckboxes"></div>
+
     <button id="saveBtn">💾 Guardar</button>
     <button id="backBtn">⬅ Volver</button>
   </section>
