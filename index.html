@@ -3,19 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Equipo Alabanza Miel</title>
 
+  <!-- PWA -->
   <link rel="manifest" href="manifest.json">
+
+  <!-- Estilos -->
   <link rel="stylesheet" href="styles.css">
+
+  <!-- Color de la barra del navegador en móvil -->
+  <meta name="theme-color" content="#3FB4E5">
 </head>
 <body>
 
-  <h1>🎹 Equipo de Alabanza – Miel</h1>
+  <!-- ENCABEZADO -->
+  <div class="header">
+    <img 
+      src="icons/logo.png" 
+      alt="Logo Equipo Alabanza Miel" 
+      class="logo"
+    >
+    <h1>Equipo Alabanza Miel</h1>
+  </div>
 
+  <!-- BOTÓN NUEVA CANCIÓN -->
   <button id="newNoteBtn">➕ Nueva Canción</button>
 
+  <!-- LISTA DE CANCIONES -->
   <div id="notesList"></div>
 
+  <!-- SCRIPT PRINCIPAL -->
   <script src="app.js"></script>
+
+  <!-- REGISTRO DEL SERVICE WORKER -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js");
+    }
+  </script>
+
 </body>
 </html>
