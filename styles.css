@@ -1,12 +1,25 @@
 body {
+  margin: 0;
   font-family: Arial, sans-serif;
-  background: #f2f2f2;
+  background-color: #3FB4E5; /* celeste del logo */
+  color: white;
   padding: 20px;
 }
 
-h1 {
+.header {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+}
+
+.logo {
+  width: 150px;
+  max-width: 80%;
+  margin-bottom: 10px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 24px;
 }
 
 button {
@@ -14,19 +27,21 @@ button {
   padding: 12px;
   font-size: 16px;
   margin-bottom: 20px;
-  background: #2c3e50;
-  color: white;
+  background: white;
+  color: #3FB4E5;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-weight: bold;
 }
 
 .note {
   background: white;
+  color: #333;
   padding: 15px;
-  margin-bottom: 10px;
-  border-radius: 6px;
+  margin-bottom: 12px;
+  border-radius: 8px;
 }
 
 .note h3 {
-  margin: 0 0 10px 0;
+  margin-top: 0;
 }
