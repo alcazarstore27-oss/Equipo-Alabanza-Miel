@@ -4,10 +4,17 @@ const newServiceBtn = document.getElementById("newServiceBtn");
 const serviceSelect = document.getElementById("serviceSelect");
 const altarModeBtn = document.getElementById("altarModeBtn");
 
+const editor = document.getElementById("editor");
+const editorTitle = document.getElementById("editorTitle");
+const editorContent = document.getElementById("editorContent");
+const saveNoteBtn = document.getElementById("saveNoteBtn");
+const closeEditorBtn = document.getElementById("closeEditorBtn");
+
 let notes = JSON.parse(localStorage.getItem("alabanzaNotes")) || [];
 let services = JSON.parse(localStorage.getItem("alabanzaServices")) || [];
 let selectedService = "";
 let altarMode = false;
+let editingNoteId = null;
 
 /* ---------- GUARDAR ---------- */
 function saveAll() {
@@ -44,8 +51,10 @@ function renderNotes() {
     div.className = "note";
     div.innerHTML = `
       <h3>${note.title}</h3>
-      <pre>${note.content}</pre>
+      <pre>${note.content || ""}</pre>
     `;
+
+    div.addEventListener("click", () => openEditor(note.id));
     notesList.appendChild(div);
   });
 }
@@ -53,23 +62,52 @@ function renderNotes() {
 /* ---------- NUEVA CANCIÓN ---------- */
 newNoteBtn.addEventListener("click", () => {
   const title = prompt("🎵 Título de la canción:");
-  const content = prompt("🎼 Estructura, acordes y notas:");
 
-  if (title && content) {
+  if (title) {
     notes.push({
       id: Date.now().toString(),
       title,
-      content
+      content: ""
     });
     saveAll();
     renderNotes();
   }
 });
 
-/* ---------- NUEVO SERVICIO ---------- */
+/* ---------- EDITOR ---------- */
+function openEditor(noteId) {
+  const note = notes.find(n => n.id === noteId);
+  if (!note) return;
+
+  editingNoteId = noteId;
+  editorTitle.textContent = note.title;
+  editorContent.value = note.content || "";
+
+  editor.classList.remove("hidden");
+  notesList.classList.add("hidden");
+}
+
+saveNoteBtn.addEventListener("click", () => {
+  const note = notes.find(n => n.id === editingNoteId);
+  if (!note) return;
+
+  note.content = editorContent.value;
+  saveAll();
+  closeEditor();
+  renderNotes();
+});
+
+closeEditorBtn.addEventListener("click", closeEditor);
+
+function closeEditor() {
+  editor.classList.add("hidden");
+  notesList.classList.remove("hidden");
+  editingNoteId = null;
+}
+
+/* ---------- SERVICIOS ---------- */
 newServiceBtn.addEventListener("click", () => {
   const name = prompt("📅 Nombre del servicio:");
-
   if (name) {
     services.push({
       id: Date.now().toString(),
@@ -81,7 +119,6 @@ newServiceBtn.addEventListener("click", () => {
   }
 });
 
-/* ---------- SELECCIONAR SERVICIO ---------- */
 serviceSelect.addEventListener("change", e => {
   selectedService = e.target.value;
   renderNotes();
