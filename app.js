@@ -1,36 +1,57 @@
 const songList = document.getElementById("songList");
 const newSongBtn = document.getElementById("newSongBtn");
-const altarBtn = document.getElementById("altarBtn");
 const searchInput = document.getElementById("searchInput");
+const altarBtn = document.getElementById("altarBtn");
+
+const newServiceBtn = document.getElementById("newServiceBtn");
+const serviceSelect = document.getElementById("serviceSelect");
 
 const editor = document.getElementById("editor");
 const editorTitle = document.getElementById("editorTitle");
 const editorText = document.getElementById("editorText");
+const serviceCheckboxes = document.getElementById("serviceCheckboxes");
 const saveBtn = document.getElementById("saveBtn");
 const backBtn = document.getElementById("backBtn");
 
 let songs = JSON.parse(localStorage.getItem("songs")) || [];
+let services = JSON.parse(localStorage.getItem("services")) || [];
 let currentSongId = null;
+let currentService = "";
 let altarMode = false;
 
 /* ---------- GUARDAR ---------- */
-function saveSongs() {
+function saveAll() {
   localStorage.setItem("songs", JSON.stringify(songs));
+  localStorage.setItem("services", JSON.stringify(services));
 }
 
-/* ---------- RENDER ---------- */
+/* ---------- RENDER SERVICIOS ---------- */
+function renderServices() {
+  serviceSelect.innerHTML = `<option value="">— Ver todas las canciones —</option>`;
+  services.forEach(s => {
+    const opt = document.createElement("option");
+    opt.value = s.id;
+    opt.textContent = s.date;
+    serviceSelect.appendChild(opt);
+  });
+}
+
+/* ---------- RENDER CANCIONES ---------- */
 function renderSongs(filter = "") {
   songList.innerHTML = "";
 
-  songs
+  let visibleSongs = songs;
+
+  if (currentService) {
+    visibleSongs = songs.filter(s => s.services?.includes(currentService));
+  }
+
+  visibleSongs
     .filter(s => s.title.toLowerCase().includes(filter.toLowerCase()))
     .forEach(song => {
       const div = document.createElement("div");
       div.className = "song";
-      div.innerHTML = `
-        <h3>${song.title}</h3>
-        <p>${song.content.slice(0, 40)}...</p>
-      `;
+      div.innerHTML = `<h3>${song.title}</h3>`;
       div.onclick = () => openEditor(song.id);
       songList.appendChild(div);
     });
@@ -44,11 +65,26 @@ newSongBtn.onclick = () => {
   songs.push({
     id: Date.now().toString(),
     title,
-    content: ""
+    content: "",
+    services: []
   });
 
-  saveSongs();
+  saveAll();
   renderSongs();
+};
+
+/* ---------- NUEVO SERVICIO ---------- */
+newServiceBtn.onclick = () => {
+  const date = prompt("Fecha del servicio (ej: 2026-01-28):");
+  if (!date) return;
+
+  services.push({
+    id: Date.now().toString(),
+    date
+  });
+
+  saveAll();
+  renderServices();
 };
 
 /* ---------- EDITOR ---------- */
@@ -60,6 +96,16 @@ function openEditor(id) {
   editorTitle.textContent = song.title;
   editorText.value = song.content;
 
+  serviceCheckboxes.innerHTML = "<strong>Asignar a servicios:</strong><br>";
+  services.forEach(s => {
+    const checked = song.services.includes(s.id) ? "checked" : "";
+    serviceCheckboxes.innerHTML += `
+      <label>
+        <input type="checkbox" value="${s.id}" ${checked}> ${s.date}
+      </label>
+    `;
+  });
+
   editor.classList.remove("hidden");
   songList.classList.add("hidden");
 }
@@ -69,7 +115,11 @@ saveBtn.onclick = () => {
   if (!song) return;
 
   song.content = editorText.value;
-  saveSongs();
+  song.services = Array.from(
+    serviceCheckboxes.querySelectorAll("input:checked")
+  ).map(cb => cb.value);
+
+  saveAll();
   closeEditor();
   renderSongs();
 };
@@ -83,8 +133,12 @@ function closeEditor() {
 }
 
 /* ---------- BUSCAR ---------- */
-searchInput.oninput = e => {
-  renderSongs(e.target.value);
+searchInput.oninput = e => renderSongs(e.target.value);
+
+/* ---------- FILTRO SERVICIO ---------- */
+serviceSelect.onchange = e => {
+  currentService = e.target.value;
+  renderSongs();
 };
 
 /* ---------- MODO EN VIVO ---------- */
@@ -95,4 +149,5 @@ altarBtn.onclick = () => {
 };
 
 /* ---------- INIT ---------- */
+renderServices();
 renderSongs();
