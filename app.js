@@ -8,6 +8,7 @@ const editor = document.getElementById("editor");
 const editorTitle = document.getElementById("editorTitle");
 const editorText = document.getElementById("editorText");
 const songType = document.getElementById("songType");
+const serviceCheckboxes = document.getElementById("serviceCheckboxes");
 const saveBtn = document.getElementById("saveBtn");
 const backBtn = document.getElementById("backBtn");
 
@@ -27,7 +28,7 @@ function saveData() {
   localStorage.setItem("services", JSON.stringify(services));
 }
 
-function renderServices() {
+function renderServicesSelect() {
   serviceSelect.innerHTML = `<option value="">— Ver todas —</option>`;
   services.forEach(s => {
     const opt = document.createElement("option");
@@ -43,17 +44,16 @@ function renderSongs() {
   let list = songs;
   if (currentService) {
     const srv = services.find(s => s.id === currentService);
-    if (!srv) return;
     list = srv.order.map(id => songs.find(s => s.id === id)).filter(Boolean);
   }
 
   const alab = list.filter(s => s.type === "alabanza");
   const ador = list.filter(s => s.type === "adoracion");
-  const sinTipo = list.filter(s => !s.type);
+  const sin = list.filter(s => !s.type);
 
   renderBlock("🎶 Alabanza", alab);
   renderBlock("🙏 Adoración", ador);
-  renderBlock("📌 Sin clasificar", sinTipo);
+  renderBlock("📌 Sin clasificar", sin);
 }
 
 function renderBlock(title, list) {
@@ -92,8 +92,38 @@ function openEditor(id) {
   editorText.value = song.content || "";
   songType.value = song.type || "";
 
+  renderServiceCheckboxes(song);
+
   editor.classList.remove("hidden");
   songList.classList.add("hidden");
+}
+
+function renderServiceCheckboxes(song) {
+  serviceCheckboxes.innerHTML = "";
+
+  services.forEach(service => {
+    const label = document.createElement("label");
+    label.style.display = "block";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = service.order.includes(song.id);
+
+    checkbox.onchange = () => {
+      if (checkbox.checked) {
+        if (!service.order.includes(song.id)) {
+          service.order.push(song.id);
+        }
+      } else {
+        service.order = service.order.filter(id => id !== song.id);
+      }
+      saveData();
+    };
+
+    label.appendChild(checkbox);
+    label.append(" " + service.date);
+    serviceCheckboxes.appendChild(label);
+  });
 }
 
 function closeEditor() {
@@ -115,7 +145,6 @@ saveBtn.onclick = () => {
 
 backBtn.onclick = closeEditor;
 
-// ✅ AQUÍ ESTABA EL PROBLEMA
 newSongBtn.onclick = () => {
   const title = prompt("Nombre de la canción");
   if (!title) return;
@@ -130,8 +159,6 @@ newSongBtn.onclick = () => {
   songs.push(newSong);
   saveData();
   renderSongs();
-
-  // 👉 ABRIR EDITOR AUTOMÁTICAMENTE
   openEditor(newSong.id);
 };
 
@@ -142,11 +169,11 @@ newServiceBtn.onclick = () => {
   services.push({
     id: Date.now().toString(),
     date,
-    order: songs.map(s => s.id)
+    order: []
   });
 
   saveData();
-  renderServices();
+  renderServicesSelect();
 };
 
 serviceSelect.onchange = e => {
@@ -163,5 +190,5 @@ exitLive.onclick = () => {
   liveView.classList.add("hidden");
 };
 
-renderServices();
+renderServicesSelect();
 renderSongs();
