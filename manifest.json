@@ -1,0 +1,9 @@
+{
+  "name": "Equipo de Alabanza Miel",
+  "short_name": "Alabanza Miel",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2c3e50",
+  "icons": []
+}
