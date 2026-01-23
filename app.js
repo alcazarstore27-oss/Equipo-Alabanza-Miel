@@ -156,7 +156,6 @@ newServiceBtn.onclick = () => {
 // ===== ELIMINAR SERVICIO =====
 deleteServiceBtn.onclick = () => {
   if (!currentServiceId) return;
-
   if (!confirm("¿Eliminar este servicio?")) return;
 
   songs.forEach(song => {
@@ -177,7 +176,7 @@ serviceSelect.onchange = e => {
   renderSongs();
 };
 
-// ===== SERVICIO EN VIVO (ORDEN POR BOTONES) =====
+// ===== SERVICIO EN VIVO =====
 serviceLiveBtn.onclick = () => {
   if (!currentServiceId) {
     alert("Selecciona un servicio");
@@ -200,6 +199,9 @@ function renderServiceSongs() {
 
     const row = document.createElement("div");
     row.className = "song";
+    row.style.display = "flex";
+    row.style.alignItems = "center";
+    row.style.gap = "6px";
 
     const title = document.createElement("span");
     title.textContent = song.title;
@@ -207,7 +209,8 @@ function renderServiceSongs() {
 
     const up = document.createElement("button");
     up.textContent = "⬆️";
-    up.onclick = () => {
+    up.onclick = e => {
+      e.stopPropagation();
       if (index === 0) return;
       [srv.order[index - 1], srv.order[index]] =
         [srv.order[index], srv.order[index - 1]];
@@ -217,7 +220,8 @@ function renderServiceSongs() {
 
     const down = document.createElement("button");
     down.textContent = "⬇️";
-    down.onclick = () => {
+    down.onclick = e => {
+      e.stopPropagation();
       if (index === srv.order.length - 1) return;
       [srv.order[index + 1], srv.order[index]] =
         [srv.order[index], srv.order[index + 1]];
@@ -225,17 +229,14 @@ function renderServiceSongs() {
       renderServiceSongs();
     };
 
-    row.style.display = "flex";
-    row.style.gap = "6px";
-    row.appendChild(title);
-    row.appendChild(up);
-    row.appendChild(down);
-
     row.onclick = () => {
       liveContent.textContent = song.content || "";
       liveView.classList.remove("hidden");
     };
 
+    row.appendChild(title);
+    row.appendChild(up);
+    row.appendChild(down);
     serviceSongList.appendChild(row);
   });
 }
@@ -254,4 +255,3 @@ exitServiceBtn.onclick = () => {
 // ===== INIT =====
 renderServices();
 renderSongs();
-
