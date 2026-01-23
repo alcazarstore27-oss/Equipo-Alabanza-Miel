@@ -1,4 +1,4 @@
- // ===== ELEMENTOS =====
+// ===== ELEMENTOS =====
 const songList = document.getElementById("songList");
 const serviceSongList = document.getElementById("serviceSongList");
 const serviceLiveTitle = document.getElementById("serviceLiveTitle");
@@ -39,8 +39,8 @@ function saveData() {
 
 // ===== SERVICIOS =====
 function renderServices() {
-  serviceSelect.innerHTML = <option value="">— Ver todas —</option>;
-  songService.innerHTML = <option value="">— Sin asignar —</option>;
+  serviceSelect.innerHTML = `<option value="">— Ver todas —</option>`;
+  songService.innerHTML = `<option value="">— Sin asignar —</option>`;
 
   services.forEach(s => {
     const opt1 = document.createElement("option");
@@ -180,7 +180,7 @@ serviceLiveBtn.onclick = () => {
   }
 
   const srv = services.find(s => s.id === currentServiceId);
-  serviceLiveTitle.textContent = 🎹 Servicio en Vivo – ${srv.date};
+  serviceLiveTitle.textContent = `🎹 Servicio en Vivo – ${srv.date}`;
 
   serviceLive.classList.remove("hidden");
   songList.classList.add("hidden");
