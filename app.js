@@ -14,7 +14,6 @@ const backBtn = document.getElementById("backBtn");
 
 const liveView = document.getElementById("liveView");
 const liveContent = document.getElementById("liveContent");
-const exitLive = document.getElementById("exitLive");
 
 // ===== DATOS =====
 let songs = JSON.parse(localStorage.getItem("songs")) || [];
@@ -80,8 +79,7 @@ function renderBlock(title, list) {
 
     div.onclick = () => {
       if (altarMode) {
-        liveContent.textContent = song.content || "";
-        liveView.classList.remove("hidden");
+        openLive(song);
       } else {
         openEditor(song.id);
       }
@@ -108,58 +106,6 @@ function openEditor(id) {
   editor.classList.remove("hidden");
 }
 
-function renderEditorServices() {
-  // elimina selector previo si existe
-  const old = document.getElementById("editorServiceBlock");
-  if (old) old.remove();
-
-  if (!services.length) return;
-
-  const container = document.createElement("div");
-  container.id = "editorServiceBlock";
-
-  const label = document.createElement("label");
-  label.innerHTML = "<strong>Servicio</strong>";
-
-  const select = document.createElement("select");
-  select.id = "editorServiceSelect";
-
-  services.forEach(s => {
-    const opt = document.createElement("option");
-    opt.value = s.id;
-    opt.textContent = s.date;
-    select.appendChild(opt);
-  });
-
-  const btn = document.createElement("button");
-  btn.textContent = "➕ / ➖ Agregar o quitar del servicio";
-
-  btn.onclick = () => {
-    const serviceId = select.value;
-    const srv = services.find(s => s.id === serviceId);
-    if (!srv) return;
-
-    const index = srv.order.indexOf(currentSongId);
-
-    if (index === -1) {
-      srv.order.push(currentSongId);
-      alert("Canción agregada al servicio");
-    } else {
-      srv.order.splice(index, 1);
-      alert("Canción quitada del servicio");
-    }
-
-    saveData();
-    renderSongs();
-  };
-
-  container.appendChild(label);
-  container.appendChild(select);
-  container.appendChild(btn);
-
-  editor.insertBefore(container, editorText);
-}
-
 function closeEditor() {
   editor.classList.add("hidden");
   songList.classList.remove("hidden");
@@ -180,22 +126,68 @@ saveBtn.onclick = () => {
 
 backBtn.onclick = closeEditor;
 
+// ===== SERVICIOS EN EDITOR =====
+function renderEditorServices() {
+  const old = document.getElementById("editorServiceBlock");
+  if (old) old.remove();
+
+  if (!services.length) return;
+
+  const container = document.createElement("div");
+  container.id = "editorServiceBlock";
+
+  const label = document.createElement("label");
+  label.innerHTML = "<strong>Servicio</strong>";
+
+  const select = document.createElement("select");
+  services.forEach(s => {
+    const opt = document.createElement("option");
+    opt.value = s.id;
+    opt.textContent = s.date;
+    select.appendChild(opt);
+  });
+
+  const btn = document.createElement("button");
+  btn.textContent = "➕ / ➖ Agregar o quitar del servicio";
+
+  btn.onclick = () => {
+    const srv = services.find(s => s.id === select.value);
+    if (!srv) return;
+
+    const idx = srv.order.indexOf(currentSongId);
+    if (idx === -1) {
+      srv.order.push(currentSongId);
+    } else {
+      srv.order.splice(idx, 1);
+    }
+
+    saveData();
+    renderSongs();
+  };
+
+  container.appendChild(label);
+  container.appendChild(select);
+  container.appendChild(btn);
+
+  editor.insertBefore(container, editorText);
+}
+
 // ===== NUEVA CANCIÓN =====
 newSongBtn.onclick = () => {
   const title = prompt("Nombre de la canción");
   if (!title) return;
 
-  const newSong = {
+  const song = {
     id: Date.now().toString(),
     title,
     type: "",
     content: ""
   };
 
-  songs.push(newSong);
+  songs.push(song);
   saveData();
   renderSongs();
-  openEditor(newSong.id);
+  openEditor(song.id);
 };
 
 // ===== NUEVO SERVICIO =====
@@ -220,14 +212,28 @@ serviceSelect.onchange = e => {
 };
 
 // ===== MODO EN VIVO =====
+function openLive(song) {
+  liveContent.textContent = song.content || "";
+  liveView.classList.remove("hidden");
+}
+
+// tocar pantalla negra → volver a la lista
+liveView.onclick = () => {
+  liveView.classList.add("hidden");
+};
+
 altarBtn.onclick = () => {
   altarMode = !altarMode;
   altarBtn.textContent = altarMode ? "❌ Salir En Vivo" : "🎹 En Vivo";
+
+  if (!altarMode) {
+    liveView.classList.add("hidden");
+  }
 };
 
-exitLive.onclick = () => {
-  liveView.classList.add("hidden");
-};
+// ===== INICIO =====
+renderServices();
+renderSongs();
 
 // ===== INICIO =====
 renderServices();
