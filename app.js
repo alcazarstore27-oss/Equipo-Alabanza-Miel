@@ -12,6 +12,10 @@ const songTypeSelect = document.getElementById("songType");
 const saveBtn = document.getElementById("saveBtn");
 const backBtn = document.getElementById("backBtn");
 
+const liveView = document.getElementById("liveView");
+const liveContent = document.getElementById("liveContent");
+const exitLive = document.getElementById("exitLive");
+
 let songs = JSON.parse(localStorage.getItem("songs")) || [];
 let services = JSON.parse(localStorage.getItem("services")) || [];
 
@@ -53,7 +57,7 @@ function renderSongs() {
 
   service.order.forEach(id => {
     const song = songs.find(s => s.id === id);
-    if (!song) return;
+    if (!song || !song.type) return;
     if (song.type === "alabanza") alabanza.push(song);
     if (song.type === "adoracion") adoracion.push(song);
   });
@@ -78,7 +82,14 @@ function renderBlock(title, list) {
     div.dataset.id = song.id;
     div.textContent = song.title;
 
-    div.onclick = () => openEditor(song.id);
+    div.onclick = () => {
+      if (altarMode) {
+        liveContent.textContent = song.content || "(Sin contenido)";
+        liveView.classList.remove("hidden");
+      } else {
+        openEditor(song.id);
+      }
+    };
 
     div.addEventListener("dragstart", () => {
       div.classList.add("dragging");
@@ -96,6 +107,7 @@ function renderBlock(title, list) {
 /* ===== DRAG ===== */
 songList.addEventListener("dragover", e => {
   e.preventDefault();
+
   const dragging = document.querySelector(".dragging");
   if (!dragging) return;
 
@@ -164,7 +176,6 @@ deleteServiceBtn.onclick = () => {
 
   services = services.filter(s => s.id !== currentService);
   currentService = "";
-
   saveAll();
   renderServices();
   songList.innerHTML = "";
@@ -177,7 +188,7 @@ function openEditor(id) {
 
   editorTitle.textContent = song.title;
   editorText.value = song.content;
-  songTypeSelect.value = song.type || "";
+  songTypeSelect.value = song.type;
 
   editor.classList.remove("hidden");
   songList.classList.add("hidden");
@@ -185,7 +196,6 @@ function openEditor(id) {
 
 saveBtn.onclick = () => {
   const song = songs.find(s => s.id === currentSongId);
-
   song.content = editorText.value;
   song.type = songTypeSelect.value;
 
@@ -201,6 +211,18 @@ function closeEditor() {
   songList.classList.remove("hidden");
 }
 
+/* ===== MODO ALTAR ===== */
+altarBtn.onclick = () => {
+  altarMode = !altarMode;
+  altarBtn.textContent = altarMode
+    ? "❌ Salir En Vivo"
+    : "🎹 En Vivo";
+};
+
+exitLive.onclick = () => {
+  liveView.classList.add("hidden");
+};
+
 /* ===== SELECT SERVICIO ===== */
 serviceSelect.onchange = e => {
   currentService = e.target.value;
@@ -208,15 +230,5 @@ serviceSelect.onchange = e => {
   renderSongs();
 };
 
-/* ===== MODO ALTAR ===== */
-altarBtn.onclick = () => {
-  altarMode = !altarMode;
-  document.body.classList.toggle("altar", altarMode);
-  altarBtn.textContent = altarMode
-    ? "❌ Salir En Vivo"
-    : "🎹 En Vivo";
-};
-
 /* ===== INIT ===== */
 renderServices();
-
