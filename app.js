@@ -284,4 +284,9 @@ liveView.onclick = () => {
 // ===== SALIR =====
 exitServiceBtn.onclick = () => {
   serviceLive.classList.add("hidden");
-  songList.classList.remove("hidd
+  songList.classList.remove("hidden");
+};
+
+// ===== INIT =====
+renderServices();
+renderSongs();
