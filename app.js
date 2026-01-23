@@ -1,16 +1,13 @@
 const songList = document.getElementById("songList");
 const newSongBtn = document.getElementById("newSongBtn");
-const searchInput = document.getElementById("searchInput");
-const altarBtn = document.getElementById("altarBtn");
-
 const newServiceBtn = document.getElementById("newServiceBtn");
-const deleteServiceBtn = document.getElementById("deleteServiceBtn");
 const serviceSelect = document.getElementById("serviceSelect");
+const deleteServiceBtn = document.getElementById("deleteServiceBtn");
+const altarBtn = document.getElementById("altarBtn");
 
 const editor = document.getElementById("editor");
 const editorTitle = document.getElementById("editorTitle");
 const editorText = document.getElementById("editorText");
-const serviceCheckboxes = document.getElementById("serviceCheckboxes");
 const saveBtn = document.getElementById("saveBtn");
 const backBtn = document.getElementById("backBtn");
 
@@ -30,7 +27,7 @@ function saveAll() {
 /* ---------- SERVICIOS ---------- */
 function renderServices() {
   serviceSelect.innerHTML =
-    `<option value="">— Ver todas las canciones —</option>`;
+    `<option value="">— Selecciona servicio —</option>`;
 
   services.forEach(s => {
     const opt = document.createElement("option");
@@ -42,95 +39,103 @@ function renderServices() {
   deleteServiceBtn.classList.toggle("hidden", !currentService);
 }
 
-/* ---------- ORDEN DEL SERVICIO ---------- */
-function getOrderedSongs() {
-  if (!currentService) return songs;
+/* ---------- RENDER CANCIONES ---------- */
+function renderSongs() {
+  songList.innerHTML = "";
+  if (!currentService) return;
 
   const service = services.find(s => s.id === currentService);
-  if (!service) return songs;
+  if (!service.order) service.order = [];
 
-  service.order = service.order || [];
+  const alabanza = [];
+  const adoracion = [];
 
-  const ordered = [];
   service.order.forEach(id => {
     const song = songs.find(s => s.id === id);
-    if (song) ordered.push(song);
+    if (!song) return;
+    (song.type === "alabanza" ? alabanza : adoracion).push(song);
   });
 
-  const remaining = songs.filter(
-    s => s.services.includes(currentService) &&
-         !service.order.includes(s.id)
-  );
-
-  return ordered.concat(remaining);
+  renderBlock("🎶 Alabanza", alabanza);
+  renderBlock("🙏 Adoración", adoracion);
 }
 
-/* ---------- CANCIONES ---------- */
-function renderSongs(filter = "") {
-  songList.innerHTML = "";
+/* ---------- BLOQUES ---------- */
+function renderBlock(title, list) {
+  if (list.length === 0) return;
 
-  let visibleSongs = currentService
-    ? getOrderedSongs()
-    : songs;
+  const h = document.createElement("div");
+  h.className = "block-title";
+  h.textContent = title;
+  songList.appendChild(h);
 
-  visibleSongs
-    .filter(s =>
-      s.title.toLowerCase().includes(filter.toLowerCase())
-    )
-    .forEach((song, index) => {
-      const div = document.createElement("div");
-      div.className = "song";
+  list.forEach(song => {
+    const div = document.createElement("div");
+    div.className = "song";
+    div.draggable = true;
+    div.textContent = song.title;
+    div.dataset.id = song.id;
 
-      div.innerHTML = `
-        <div class="song-header">
-          <h3>${song.title}</h3>
-          ${currentService ? `
-          <div class="order-buttons">
-            <button onclick="moveSong('${song.id}', -1)">⬆️</button>
-            <button onclick="moveSong('${song.id}', 1)">⬇️</button>
-          </div>` : ""}
-        </div>
-      `;
+    div.onclick = () => openEditor(song.id);
 
-      div.onclick = () => openEditor(song.id);
-      songList.appendChild(div);
+    div.addEventListener("dragstart", () => {
+      div.classList.add("dragging");
     });
+
+    div.addEventListener("dragend", () => {
+      div.classList.remove("dragging");
+      saveAll();
+    });
+
+    songList.appendChild(div);
+  });
 }
 
-/* ---------- MOVER CANCIÓN ---------- */
-window.moveSong = function (songId, direction) {
-  const service = services.find(s => s.id === currentService);
-  if (!service) return;
+/* ---------- DRAG ---------- */
+songList.addEventListener("dragover", e => {
+  e.preventDefault();
+  const dragging = document.querySelector(".dragging");
+  const after = [...songList.querySelectorAll(".song:not(.dragging)")]
+    .find(el => e.clientY < el.offsetTop + el.offsetHeight / 2);
 
-  service.order = service.order || [];
-
-  if (!service.order.includes(songId)) {
-    service.order.push(songId);
+  if (after) {
+    songList.insertBefore(dragging, after);
+  } else {
+    songList.appendChild(dragging);
   }
 
-  const idx = service.order.indexOf(songId);
-  const newIdx = idx + direction;
+  updateOrder();
+});
 
-  if (newIdx < 0 || newIdx >= service.order.length) return;
+function updateOrder() {
+  const ids = [...songList.querySelectorAll(".song")]
+    .map(el => el.dataset.id);
 
-  [service.order[idx], service.order[newIdx]] =
-    [service.order[newIdx], service.order[idx]];
-
-  saveAll();
-  renderSongs();
-};
+  const service = services.find(s => s.id === currentService);
+  service.order = ids;
+}
 
 /* ---------- NUEVA CANCIÓN ---------- */
 newSongBtn.onclick = () => {
   const title = prompt("Nombre de la canción:");
   if (!title) return;
 
-  songs.push({
+  const type = prompt("Tipo: alabanza o adoracion").toLowerCase();
+  if (!["alabanza", "adoracion"].includes(type)) return;
+
+  const song = {
     id: Date.now().toString(),
     title,
-    content: "",
-    services: []
-  });
+    type,
+    content: ""
+  };
+
+  songs.push(song);
+
+  if (currentService) {
+    const service = services.find(s => s.id === currentService);
+    service.order.push(song.id);
+  }
 
   saveAll();
   renderSongs();
@@ -138,7 +143,7 @@ newSongBtn.onclick = () => {
 
 /* ---------- NUEVO SERVICIO ---------- */
 newServiceBtn.onclick = () => {
-  const date = prompt("Fecha del servicio (ej: 2026-02-02):");
+  const date = prompt("Fecha del servicio:");
   if (!date) return;
 
   services.push({
@@ -155,62 +160,30 @@ newServiceBtn.onclick = () => {
 deleteServiceBtn.onclick = () => {
   if (!currentService) return;
 
-  const service = services.find(s => s.id === currentService);
-  if (!service) return;
-
-  if (!confirm(`¿Borrar el servicio ${service.date}?`)) return;
+  if (!confirm("¿Borrar este servicio?")) return;
 
   services = services.filter(s => s.id !== currentService);
-  songs.forEach(song => {
-    song.services = song.services.filter(id => id !== currentService);
-  });
-
   currentService = "";
   saveAll();
   renderServices();
-  renderSongs();
+  songList.innerHTML = "";
 };
 
 /* ---------- EDITOR ---------- */
 function openEditor(id) {
   const song = songs.find(s => s.id === id);
-  if (!song) return;
-
   currentSongId = id;
   editorTitle.textContent = song.title;
   editorText.value = song.content;
-
-  serviceCheckboxes.innerHTML =
-    "<strong>Asignar a servicios:</strong><br>";
-
-  services.forEach(s => {
-    const checked = song.services.includes(s.id)
-      ? "checked"
-      : "";
-    serviceCheckboxes.innerHTML += `
-      <label>
-        <input type="checkbox" value="${s.id}" ${checked}>
-        ${s.date}
-      </label>
-    `;
-  });
-
   editor.classList.remove("hidden");
   songList.classList.add("hidden");
 }
 
 saveBtn.onclick = () => {
   const song = songs.find(s => s.id === currentSongId);
-  if (!song) return;
-
   song.content = editorText.value;
-  song.services = Array.from(
-    serviceCheckboxes.querySelectorAll("input:checked")
-  ).map(cb => cb.value);
-
   saveAll();
   closeEditor();
-  renderSongs();
 };
 
 backBtn.onclick = closeEditor;
@@ -218,27 +191,21 @@ backBtn.onclick = closeEditor;
 function closeEditor() {
   editor.classList.add("hidden");
   songList.classList.remove("hidden");
-  currentSongId = null;
 }
 
-/* ---------- BUSCAR ---------- */
-searchInput.oninput = e => renderSongs(e.target.value);
-
-/* ---------- FILTRO SERVICIO ---------- */
+/* ---------- SELECT ---------- */
 serviceSelect.onchange = e => {
   currentService = e.target.value;
   renderServices();
   renderSongs();
 };
 
-/* ---------- MODO EN VIVO ---------- */
+/* ---------- ALTAR ---------- */
 altarBtn.onclick = () => {
   altarMode = !altarMode;
   document.body.classList.toggle("altar", altarMode);
-  altarBtn.textContent =
-    altarMode ? "❌ Salir En Vivo" : "🎹 En Vivo";
+  altarBtn.textContent = altarMode ? "❌ Salir En Vivo" : "🎹 En Vivo";
 };
 
 /* ---------- INIT ---------- */
 renderServices();
-renderSongs();
