@@ -1,6 +1,7 @@
 // ===== ELEMENTOS =====
 const songList = document.getElementById("songList");
 const serviceSongList = document.getElementById("serviceSongList");
+const serviceLiveTitle = document.getElementById("serviceLiveTitle");
 
 const newSongBtn = document.getElementById("newSongBtn");
 const newServiceBtn = document.getElementById("newServiceBtn");
@@ -193,6 +194,9 @@ serviceLiveBtn.onclick = () => {
     return;
   }
 
+  const srv = services.find(s => s.id === currentServiceId);
+  serviceLiveTitle.textContent = `🎹 Servicio en Vivo – ${srv.date}`;
+
   serviceLive.classList.remove("hidden");
   songList.classList.add("hidden");
   renderServiceSongs();
@@ -225,20 +229,11 @@ function renderServiceBlock(titleText, list) {
   list.forEach((song, i) => {
     const row = document.createElement("div");
     row.className = "song";
-    row.style.display = "flex";
-    row.style.alignItems = "center";
-    row.style.gap = "6px";
-
-    const label = document.createElement("span");
-    label.textContent = `${i + 1}. ${song.title}`;
-    label.style.flex = "1";
-
+    row.textContent = `${i + 1}. ${song.title}`;
     row.onclick = () => {
       liveContent.textContent = song.content || "";
       liveView.classList.remove("hidden");
     };
-
-    row.appendChild(label);
     serviceSongList.appendChild(row);
   });
 }
