@@ -52,14 +52,16 @@ function renderServices() {
   });
 }
 
-// ===== LISTA =====
+// ===== LISTA PRINCIPAL =====
 function renderSongs() {
   songList.innerHTML = "";
 
   let list = songs;
   if (currentServiceId) {
     const srv = services.find(s => s.id === currentServiceId);
-    if (srv) list = srv.order.map(id => songs.find(s => s.id === id)).filter(Boolean);
+    if (srv) {
+      list = srv.order.map(id => songs.find(s => s.id === id)).filter(Boolean);
+    }
   }
 
   list.forEach(song => {
@@ -198,53 +200,45 @@ serviceLiveBtn.onclick = () => {
 
 function renderServiceSongs() {
   serviceSongList.innerHTML = "";
+
   const srv = services.find(s => s.id === currentServiceId);
   if (!srv) return;
 
-  srv.order.forEach((id, index) => {
-    const song = songs.find(s => s.id === id);
-    if (!song) return;
+  const orderedSongs = srv.order
+    .map(id => songs.find(s => s.id === id))
+    .filter(Boolean);
 
+  const alabanza = orderedSongs.filter(s => s.type === "alabanza");
+  const adoracion = orderedSongs.filter(s => s.type === "adoracion");
+
+  renderServiceBlock("🎶 Alabanza", alabanza);
+  renderServiceBlock("🙏 Adoración", adoracion);
+}
+
+function renderServiceBlock(titleText, list) {
+  if (!list.length) return;
+
+  const title = document.createElement("h3");
+  title.textContent = titleText;
+  serviceSongList.appendChild(title);
+
+  list.forEach((song, i) => {
     const row = document.createElement("div");
     row.className = "song";
     row.style.display = "flex";
     row.style.alignItems = "center";
     row.style.gap = "6px";
 
-    const title = document.createElement("span");
-    title.textContent = song.title;
-    title.style.flex = "1";
-
-    const up = document.createElement("button");
-    up.textContent = "⬆️";
-    up.onclick = e => {
-      e.stopPropagation();
-      if (index === 0) return;
-      [srv.order[index - 1], srv.order[index]] =
-        [srv.order[index], srv.order[index - 1]];
-      saveData();
-      renderServiceSongs();
-    };
-
-    const down = document.createElement("button");
-    down.textContent = "⬇️";
-    down.onclick = e => {
-      e.stopPropagation();
-      if (index === srv.order.length - 1) return;
-      [srv.order[index + 1], srv.order[index]] =
-        [srv.order[index], srv.order[index + 1]];
-      saveData();
-      renderServiceSongs();
-    };
+    const label = document.createElement("span");
+    label.textContent = `${i + 1}. ${song.title}`;
+    label.style.flex = "1";
 
     row.onclick = () => {
       liveContent.textContent = song.content || "";
       liveView.classList.remove("hidden");
     };
 
-    row.appendChild(title);
-    row.appendChild(up);
-    row.appendChild(down);
+    row.appendChild(label);
     serviceSongList.appendChild(row);
   });
 }
@@ -263,4 +257,3 @@ exitServiceBtn.onclick = () => {
 // ===== INIT =====
 renderServices();
 renderSongs();
-
