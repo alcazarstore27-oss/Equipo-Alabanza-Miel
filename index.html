@@ -30,9 +30,22 @@
 
 <main id="songList"></main>
 
+<!-- EDITOR -->
 <section id="editor" class="editor hidden">
   <h2 id="editorTitle"></h2>
-  <textarea id="editorText" placeholder="Estructura, acordes, notas..."></textarea>
+
+  <label><strong>Tipo de canción</strong></label>
+  <select id="songType">
+    <option value="">— Seleccionar —</option>
+    <option value="alabanza">🎶 Alabanza</option>
+    <option value="adoracion">🙏 Adoración</option>
+  </select>
+
+  <textarea
+    id="editorText"
+    placeholder="Estructura, acordes y notas..."
+  ></textarea>
+
   <button id="saveBtn">💾 Guardar</button>
   <button id="backBtn">⬅ Volver</button>
 </section>
