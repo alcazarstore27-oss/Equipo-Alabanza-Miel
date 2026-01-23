@@ -35,10 +35,16 @@
 <section id="editor" class="editor hidden">
   <h2 id="editorTitle"></h2>
 
+  <label><strong>Tipo de canción</strong></label>
   <select id="songType">
     <option value="">— Tipo —</option>
     <option value="alabanza">🎶 Alabanza</option>
     <option value="adoracion">🙏 Adoración</option>
+  </select>
+
+  <label><strong>Asignar al servicio</strong></label>
+  <select id="songService">
+    <option value="">— Sin asignar —</option>
   </select>
 
   <textarea id="editorText" placeholder="Letra, acordes, estructura..."></textarea>
@@ -47,12 +53,11 @@
   <button id="backBtn">⬅ Volver</button>
 </section>
 
-<!-- ===== SERVICIO EN VIVO (ORDEN) ===== -->
+<!-- ===== SERVICIO EN VIVO ===== -->
 <section id="serviceLive" class="hidden">
   <h2>🎼 Orden del Servicio</h2>
   <div id="serviceSongList"></div>
 
-  <button id="goLiveBtn">🎹 Ahora sí En Vivo</button>
   <button id="exitServiceBtn">❌ Terminar Servicio</button>
 </section>
 
@@ -64,4 +69,3 @@
 <script src="app.js"></script>
 </body>
 </html>
-
