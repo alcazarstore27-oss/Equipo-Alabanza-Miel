@@ -15,12 +15,9 @@ body {
   margin-bottom: 8px;
 }
 
-.actions {
-  margin: 20px 0;
-}
-
 .actions input,
-.actions button {
+.actions button,
+.actions select {
   width: 100%;
   padding: 14px;
   margin-bottom: 10px;
@@ -29,7 +26,8 @@ body {
   border: none;
 }
 
-.actions input {
+.actions input,
+.actions select {
   color: #333;
 }
 
@@ -52,11 +50,6 @@ body {
   margin: 0;
 }
 
-.song p {
-  margin-top: 6px;
-  color: #444;
-}
-
 .editor {
   background: white;
   color: black;
@@ -66,16 +59,21 @@ body {
 
 .editor textarea {
   width: 100%;
-  height: 250px;
-  font-size: 16px;
+  height: 220px;
   margin-bottom: 10px;
+  font-size: 16px;
+}
+
+#serviceCheckboxes label {
+  display: block;
+  margin-bottom: 6px;
 }
 
 .hidden {
   display: none;
 }
 
-/* ===== MODO EN VIVO ===== */
+/* MODO EN VIVO */
 body.altar .header,
 body.altar .actions,
 body.altar .editor {
@@ -86,3 +84,4 @@ body.altar .song {
   font-size: 22px;
   line-height: 1.6;
 }
+
