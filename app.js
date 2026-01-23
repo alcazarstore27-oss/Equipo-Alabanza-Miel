@@ -52,7 +52,7 @@ function renderServices() {
   });
 }
 
-// ===== LISTA DE CANCIONES (FILTRADA) =====
+// ===== LISTA DE CANCIONES =====
 function renderSongs() {
   songList.innerHTML = "";
 
@@ -79,6 +79,8 @@ function renderSongs() {
 // ===== EDITOR =====
 function openEditor(id) {
   const song = songs.find(s => s.id === id);
+  if (!song) return;
+
   currentSongId = id;
 
   editorTitle.textContent = song.title;
@@ -98,19 +100,23 @@ function closeEditor() {
 
 saveBtn.onclick = () => {
   const song = songs.find(s => s.id === currentSongId);
-  const prevService = song.serviceId;
+  if (!song) return;
+
+  const previousService = song.serviceId;
 
   song.content = editorText.value;
   song.type = songType.value;
   song.serviceId = songService.value;
 
-  if (prevService) {
-    const oldSrv = services.find(s => s.id === prevService);
+  // quitar de servicio anterior
+  if (previousService) {
+    const oldSrv = services.find(s => s.id === previousService);
     if (oldSrv) {
       oldSrv.order = oldSrv.order.filter(id => id !== song.id);
     }
   }
 
+  // agregar a nuevo servicio
   if (song.serviceId) {
     const srv = services.find(s => s.id === song.serviceId);
     if (srv && !srv.order.includes(song.id)) {
@@ -156,24 +162,29 @@ newServiceBtn.onclick = () => {
   renderServices();
 };
 
-// ===== ELIMINAR SERVICIO =====
+// ===== ELIMINAR SERVICIO (SIN BORRAR CANCIONES) =====
 deleteServiceBtn.onclick = () => {
   if (!currentServiceId) {
     alert("Selecciona un servicio para eliminar");
     return;
   }
 
-  if (!confirm("¿Eliminar este servicio?")) return;
+  if (!confirm("¿Eliminar este servicio? Las canciones quedarán sin asignar.")) {
+    return;
+  }
 
-  services = services.filter(s => s.id !== currentServiceId);
-
+  // dejar canciones sin asignar
   songs.forEach(song => {
     if (song.serviceId === currentServiceId) {
       song.serviceId = "";
     }
   });
 
+  // eliminar servicio
+  services = services.filter(s => s.id !== currentServiceId);
+
   currentServiceId = "";
+
   saveData();
   renderServices();
   renderSongs();
@@ -200,6 +211,7 @@ serviceLiveBtn.onclick = () => {
 function renderServiceSongs() {
   serviceSongList.innerHTML = "";
   const srv = services.find(s => s.id === currentServiceId);
+  if (!srv) return;
 
   srv.order.forEach(id => {
     const song = songs.find(s => s.id === id);
@@ -234,7 +246,7 @@ liveView.onclick = () => {
   liveView.classList.add("hidden");
 };
 
-// ===== SALIR SERVICIO =====
+// ===== SALIR DEL SERVICIO =====
 exitServiceBtn.onclick = () => {
   serviceLive.classList.add("hidden");
   songList.classList.remove("hidden");
@@ -243,3 +255,4 @@ exitServiceBtn.onclick = () => {
 // ===== INIT =====
 renderServices();
 renderSongs();
+
