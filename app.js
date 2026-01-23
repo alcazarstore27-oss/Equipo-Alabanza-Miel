@@ -119,21 +119,6 @@ saveBtn.onclick = () => {
 
 backBtn.onclick = closeEditor;
 
-// ===== ELIMINAR CANCIÓN =====
-deleteSongBtn.onclick = () => {
-  if (!currentSongId) return;
-  if (!confirm("¿Eliminar esta canción?")) return;
-
-  songs = songs.filter(s => s.id !== currentSongId);
-  services.forEach(s => {
-    s.order = s.order.filter(id => id !== currentSongId);
-  });
-
-  currentSongId = null;
-  saveData();
-  closeEditor();
-};
-
 // ===== NUEVA CANCIÓN =====
 newSongBtn.onclick = () => {
   const title = prompt("Nombre de la canción");
@@ -215,25 +200,60 @@ function renderServiceSongs() {
   const alabanza = orderedSongs.filter(s => s.type === "alabanza");
   const adoracion = orderedSongs.filter(s => s.type === "adoracion");
 
-  renderServiceBlock("🎶 Alabanza", alabanza);
-  renderServiceBlock("🙏 Adoración", adoracion);
+  renderServiceBlock("🎶 Alabanza", alabanza, srv);
+  renderServiceBlock("🙏 Adoración", adoracion, srv);
 }
 
-function renderServiceBlock(titleText, list) {
+function renderServiceBlock(titleText, list, srv) {
   if (!list.length) return;
 
   const title = document.createElement("h3");
   title.textContent = titleText;
   serviceSongList.appendChild(title);
 
-  list.forEach((song, i) => {
+  list.forEach(song => {
+    const index = srv.order.indexOf(song.id);
+
     const row = document.createElement("div");
     row.className = "song";
-    row.textContent = `${i + 1}. ${song.title}`;
+    row.style.display = "flex";
+    row.style.alignItems = "center";
+    row.style.gap = "8px";
+
+    const label = document.createElement("span");
+    label.textContent = `${index + 1}. ${song.title}`;
+    label.style.flex = "1";
+
+    const up = document.createElement("button");
+    up.textContent = "⬆️";
+    up.onclick = e => {
+      e.stopPropagation();
+      if (index === 0) return;
+      [srv.order[index - 1], srv.order[index]] =
+        [srv.order[index], srv.order[index - 1]];
+      saveData();
+      renderServiceSongs();
+    };
+
+    const down = document.createElement("button");
+    down.textContent = "⬇️";
+    down.onclick = e => {
+      e.stopPropagation();
+      if (index === srv.order.length - 1) return;
+      [srv.order[index + 1], srv.order[index]] =
+        [srv.order[index], srv.order[index + 1]];
+      saveData();
+      renderServiceSongs();
+    };
+
     row.onclick = () => {
       liveContent.textContent = song.content || "";
       liveView.classList.remove("hidden");
     };
+
+    row.appendChild(label);
+    row.appendChild(up);
+    row.appendChild(down);
     serviceSongList.appendChild(row);
   });
 }
@@ -250,5 +270,4 @@ exitServiceBtn.onclick = () => {
 };
 
 // ===== INIT =====
-renderServices();
-renderSongs();
+renderServ
