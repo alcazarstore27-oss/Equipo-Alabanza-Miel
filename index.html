@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Equipo Alabanza Miel</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#3FB4E5">
-
   <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -21,13 +18,13 @@
 <section class="actions">
   <button id="newSongBtn">➕ Nueva Canción</button>
   <button id="newServiceBtn">📅 Nuevo Servicio</button>
+  <button id="deleteServiceBtn">🗑 Eliminar Servicio</button>
 
   <select id="serviceSelect">
     <option value="">— Ver todas —</option>
   </select>
 
-  <button id="deleteServiceBtn" class="danger">🗑️ Eliminar Servicio</button>
-  <button id="serviceLiveBtn">🎼 Servicio en Vivo</button>
+  <button id="serviceLiveBtn">🎹 Servicio en Vivo</button>
 </section>
 
 <main id="songList"></main>
@@ -36,33 +33,32 @@
 <section id="editor" class="editor hidden">
   <h2 id="editorTitle"></h2>
 
+  <label><strong>Servicio</strong></label>
+  <select id="songService"></select>
+
   <label><strong>Tipo de canción</strong></label>
   <select id="songType">
-    <option value="">— Tipo —</option>
+    <option value="">— Seleccionar —</option>
     <option value="alabanza">🎶 Alabanza</option>
     <option value="adoracion">🙏 Adoración</option>
   </select>
 
-  <label><strong>Asignar al servicio</strong></label>
-  <select id="songService">
-    <option value="">— Sin asignar —</option>
-  </select>
-
-  <textarea id="editorText" placeholder="Letra, acordes, estructura..."></textarea>
+  <textarea id="editorText"
+    placeholder="Estructura, acordes y notas..."></textarea>
 
   <button id="saveBtn">💾 Guardar</button>
+  <button id="deleteSongBtn" class="danger">🗑 Eliminar canción</button>
   <button id="backBtn">⬅ Volver</button>
 </section>
 
 <!-- ===== SERVICIO EN VIVO ===== -->
-<section id="serviceLive" class="hidden">
-  <h2>🎼 Orden del Servicio</h2>
+<section id="serviceLive" class="editor hidden">
+  <h2>Servicio en Vivo</h2>
   <div id="serviceSongList"></div>
-
-  <button id="exitServiceBtn">❌ Terminar Servicio</button>
+  <button id="exitServiceBtn">⬅ Volver</button>
 </section>
 
-<!-- ===== MODO EN VIVO ===== -->
+<!-- ===== PANTALLA NEGRA ===== -->
 <section id="liveView" class="live hidden">
   <pre id="liveContent"></pre>
 </section>
