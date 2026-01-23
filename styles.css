@@ -1,47 +1,77 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #3FB4E5; /* celeste del logo */
+  background-color: #3FB4E5;
   color: white;
   padding: 20px;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 .logo {
-  width: 150px;
-  max-width: 80%;
+  width: 140px;
   margin-bottom: 10px;
 }
 
 h1 {
   margin: 0;
-  font-size: 24px;
 }
 
-button {
+.controls {
+  margin-bottom: 20px;
+}
+
+button, select {
   width: 100%;
   padding: 12px;
   font-size: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: none;
+}
+
+button {
   background: white;
   color: #3FB4E5;
-  border: none;
-  border-radius: 8px;
   font-weight: bold;
+}
+
+select {
+  background: white;
+  color: #333;
 }
 
 .note {
   background: white;
-  color: #333;
-  padding: 15px;
-  margin-bottom: 12px;
-  border-radius: 8px;
+  color: #000;
+  padding: 16px;
+  margin-bottom: 14px;
+  border-radius: 10px;
 }
 
 .note h3 {
   margin-top: 0;
+}
+
+/* ===== MODO ALTAR ===== */
+
+body.altar-mode {
+  padding: 10px;
+}
+
+body.altar-mode .controls,
+body.altar-mode .header {
+  display: none;
+}
+
+body.altar-mode .note {
+  font-size: 22px;
+  line-height: 1.6;
+}
+
+body.altar-mode .note h3 {
+  font-size: 28px;
 }
