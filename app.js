@@ -4,6 +4,7 @@ const searchInput = document.getElementById("searchInput");
 const altarBtn = document.getElementById("altarBtn");
 
 const newServiceBtn = document.getElementById("newServiceBtn");
+const deleteServiceBtn = document.getElementById("deleteServiceBtn");
 const serviceSelect = document.getElementById("serviceSelect");
 
 const editor = document.getElementById("editor");
@@ -15,6 +16,7 @@ const backBtn = document.getElementById("backBtn");
 
 let songs = JSON.parse(localStorage.getItem("songs")) || [];
 let services = JSON.parse(localStorage.getItem("services")) || [];
+
 let currentSongId = null;
 let currentService = "";
 let altarMode = false;
@@ -25,29 +27,37 @@ function saveAll() {
   localStorage.setItem("services", JSON.stringify(services));
 }
 
-/* ---------- RENDER SERVICIOS ---------- */
+/* ---------- SERVICIOS ---------- */
 function renderServices() {
-  serviceSelect.innerHTML = `<option value="">— Ver todas las canciones —</option>`;
+  serviceSelect.innerHTML =
+    `<option value="">— Ver todas las canciones —</option>`;
+
   services.forEach(s => {
     const opt = document.createElement("option");
     opt.value = s.id;
     opt.textContent = s.date;
     serviceSelect.appendChild(opt);
   });
+
+  deleteServiceBtn.classList.toggle("hidden", !currentService);
 }
 
-/* ---------- RENDER CANCIONES ---------- */
+/* ---------- CANCIONES ---------- */
 function renderSongs(filter = "") {
   songList.innerHTML = "";
 
   let visibleSongs = songs;
 
   if (currentService) {
-    visibleSongs = songs.filter(s => s.services?.includes(currentService));
+    visibleSongs = songs.filter(s =>
+      s.services.includes(currentService)
+    );
   }
 
   visibleSongs
-    .filter(s => s.title.toLowerCase().includes(filter.toLowerCase()))
+    .filter(s =>
+      s.title.toLowerCase().includes(filter.toLowerCase())
+    )
     .forEach(song => {
       const div = document.createElement("div");
       div.className = "song";
@@ -75,7 +85,7 @@ newSongBtn.onclick = () => {
 
 /* ---------- NUEVO SERVICIO ---------- */
 newServiceBtn.onclick = () => {
-  const date = prompt("Fecha del servicio (ej: 2026-01-28):");
+  const date = prompt("Fecha del servicio (ej: 2026-02-02):");
   if (!date) return;
 
   services.push({
@@ -87,6 +97,33 @@ newServiceBtn.onclick = () => {
   renderServices();
 };
 
+/* ---------- BORRAR SERVICIO ---------- */
+deleteServiceBtn.onclick = () => {
+  if (!currentService) return;
+
+  const service = services.find(s => s.id === currentService);
+  if (!service) return;
+
+  const ok = confirm(
+    `¿Borrar el servicio del ${service.date}?\nLas canciones NO se eliminarán.`
+  );
+
+  if (!ok) return;
+
+  services = services.filter(s => s.id !== currentService);
+
+  songs.forEach(song => {
+    song.services = song.services.filter(
+      id => id !== currentService
+    );
+  });
+
+  currentService = "";
+  saveAll();
+  renderServices();
+  renderSongs();
+};
+
 /* ---------- EDITOR ---------- */
 function openEditor(id) {
   const song = songs.find(s => s.id === id);
@@ -96,12 +133,17 @@ function openEditor(id) {
   editorTitle.textContent = song.title;
   editorText.value = song.content;
 
-  serviceCheckboxes.innerHTML = "<strong>Asignar a servicios:</strong><br>";
+  serviceCheckboxes.innerHTML =
+    "<strong>Asignar a servicios:</strong><br>";
+
   services.forEach(s => {
-    const checked = song.services.includes(s.id) ? "checked" : "";
+    const checked = song.services.includes(s.id)
+      ? "checked"
+      : "";
     serviceCheckboxes.innerHTML += `
       <label>
-        <input type="checkbox" value="${s.id}" ${checked}> ${s.date}
+        <input type="checkbox" value="${s.id}" ${checked}>
+        ${s.date}
       </label>
     `;
   });
@@ -138,6 +180,7 @@ searchInput.oninput = e => renderSongs(e.target.value);
 /* ---------- FILTRO SERVICIO ---------- */
 serviceSelect.onchange = e => {
   currentService = e.target.value;
+  renderServices();
   renderSongs();
 };
 
@@ -145,7 +188,9 @@ serviceSelect.onchange = e => {
 altarBtn.onclick = () => {
   altarMode = !altarMode;
   document.body.classList.toggle("altar", altarMode);
-  altarBtn.textContent = altarMode ? "❌ Salir En Vivo" : "🎹 En Vivo";
+  altarBtn.textContent = altarMode
+    ? "❌ Salir En Vivo"
+    : "🎹 En Vivo";
 };
 
 /* ---------- INIT ---------- */
