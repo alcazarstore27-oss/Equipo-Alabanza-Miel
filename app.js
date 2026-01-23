@@ -18,13 +18,13 @@ let currentSongId = null;
 let currentService = "";
 let altarMode = false;
 
-/* ---------- GUARDAR ---------- */
+/* ================= GUARDAR ================= */
 function saveAll() {
   localStorage.setItem("songs", JSON.stringify(songs));
   localStorage.setItem("services", JSON.stringify(services));
 }
 
-/* ---------- SERVICIOS ---------- */
+/* ================= SERVICIOS ================= */
 function renderServices() {
   serviceSelect.innerHTML =
     `<option value="">— Selecciona servicio —</option>`;
@@ -39,7 +39,7 @@ function renderServices() {
   deleteServiceBtn.classList.toggle("hidden", !currentService);
 }
 
-/* ---------- RENDER CANCIONES ---------- */
+/* ================= RENDER CANCIONES ================= */
 function renderSongs() {
   songList.innerHTML = "";
   if (!currentService) return;
@@ -53,14 +53,15 @@ function renderSongs() {
   service.order.forEach(id => {
     const song = songs.find(s => s.id === id);
     if (!song) return;
-    (song.type === "alabanza" ? alabanza : adoracion).push(song);
+    if (song.type === "alabanza") alabanza.push(song);
+    if (song.type === "adoracion") adoracion.push(song);
   });
 
   renderBlock("🎶 Alabanza", alabanza);
   renderBlock("🙏 Adoración", adoracion);
 }
 
-/* ---------- BLOQUES ---------- */
+/* ================= BLOQUES ================= */
 function renderBlock(title, list) {
   if (list.length === 0) return;
 
@@ -73,8 +74,8 @@ function renderBlock(title, list) {
     const div = document.createElement("div");
     div.className = "song";
     div.draggable = true;
-    div.textContent = song.title;
     div.dataset.id = song.id;
+    div.textContent = song.title;
 
     div.onclick = () => openEditor(song.id);
 
@@ -91,10 +92,13 @@ function renderBlock(title, list) {
   });
 }
 
-/* ---------- DRAG ---------- */
+/* ================= DRAG & DROP ================= */
 songList.addEventListener("dragover", e => {
   e.preventDefault();
+
   const dragging = document.querySelector(".dragging");
+  if (!dragging) return;
+
   const after = [...songList.querySelectorAll(".song:not(.dragging)")]
     .find(el => e.clientY < el.offsetTop + el.offsetHeight / 2);
 
@@ -115,13 +119,23 @@ function updateOrder() {
   service.order = ids;
 }
 
-/* ---------- NUEVA CANCIÓN ---------- */
+/* ================= NUEVA CANCIÓN ================= */
 newSongBtn.onclick = () => {
   const title = prompt("Nombre de la canción:");
   if (!title) return;
 
-  const type = prompt("Tipo: alabanza o adoracion").toLowerCase();
-  if (!["alabanza", "adoracion"].includes(type)) return;
+  const typeOption = prompt(
+    "Tipo de canción:\n1 = Alabanza\n2 = Adoración"
+  );
+
+  let type = "";
+  if (typeOption === "1") type = "alabanza";
+  if (typeOption === "2") type = "adoracion";
+
+  if (!type) {
+    alert("Opción inválida. Canción no creada.");
+    return;
+  }
 
   const song = {
     id: Date.now().toString(),
@@ -141,9 +155,9 @@ newSongBtn.onclick = () => {
   renderSongs();
 };
 
-/* ---------- NUEVO SERVICIO ---------- */
+/* ================= NUEVO SERVICIO ================= */
 newServiceBtn.onclick = () => {
-  const date = prompt("Fecha del servicio:");
+  const date = prompt("Fecha del servicio (ej: 2026-02-10):");
   if (!date) return;
 
   services.push({
@@ -156,20 +170,20 @@ newServiceBtn.onclick = () => {
   renderServices();
 };
 
-/* ---------- BORRAR SERVICIO ---------- */
+/* ================= BORRAR SERVICIO ================= */
 deleteServiceBtn.onclick = () => {
   if (!currentService) return;
-
   if (!confirm("¿Borrar este servicio?")) return;
 
   services = services.filter(s => s.id !== currentService);
   currentService = "";
+
   saveAll();
   renderServices();
   songList.innerHTML = "";
 };
 
-/* ---------- EDITOR ---------- */
+/* ================= EDITOR ================= */
 function openEditor(id) {
   const song = songs.find(s => s.id === id);
   currentSongId = id;
@@ -193,19 +207,21 @@ function closeEditor() {
   songList.classList.remove("hidden");
 }
 
-/* ---------- SELECT ---------- */
+/* ================= SELECT SERVICIO ================= */
 serviceSelect.onchange = e => {
   currentService = e.target.value;
   renderServices();
   renderSongs();
 };
 
-/* ---------- ALTAR ---------- */
+/* ================= MODO ALTAR ================= */
 altarBtn.onclick = () => {
   altarMode = !altarMode;
   document.body.classList.toggle("altar", altarMode);
-  altarBtn.textContent = altarMode ? "❌ Salir En Vivo" : "🎹 En Vivo";
+  altarBtn.textContent = altarMode
+    ? "❌ Salir En Vivo"
+    : "🎹 En Vivo";
 };
 
-/* ---------- INIT ---------- */
+/* ================= INIT ================= */
 renderServices();
