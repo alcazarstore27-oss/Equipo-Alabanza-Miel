@@ -2,10 +2,12 @@ const notesList = document.getElementById("notesList");
 const newNoteBtn = document.getElementById("newNoteBtn");
 const newServiceBtn = document.getElementById("newServiceBtn");
 const serviceSelect = document.getElementById("serviceSelect");
+const altarModeBtn = document.getElementById("altarModeBtn");
 
 let notes = JSON.parse(localStorage.getItem("alabanzaNotes")) || [];
 let services = JSON.parse(localStorage.getItem("alabanzaServices")) || [];
 let selectedService = "";
+let altarMode = false;
 
 /* ---------- GUARDAR ---------- */
 function saveAll() {
@@ -40,22 +42,10 @@ function renderNotes() {
   visibleNotes.forEach(note => {
     const div = document.createElement("div");
     div.className = "note";
-
-    let assigned = selectedService
-      ? services.find(s => s.id === selectedService).songs.includes(note.id)
-      : false;
-
     div.innerHTML = `
       <h3>${note.title}</h3>
       <pre>${note.content}</pre>
-      ${selectedService ? `<button data-id="${note.id}">${assigned ? "❌ Quitar" : "➕ Agregar"}</button>` : ""}
     `;
-
-    if (selectedService) {
-      const btn = div.querySelector("button");
-      btn.addEventListener("click", () => toggleSong(note.id));
-    }
-
     notesList.appendChild(div);
   });
 }
@@ -97,20 +87,14 @@ serviceSelect.addEventListener("change", e => {
   renderNotes();
 });
 
-/* ---------- AGREGAR / QUITAR CANCIÓN ---------- */
-function toggleSong(songId) {
-  const service = services.find(s => s.id === selectedService);
-  if (!service) return;
-
-  if (service.songs.includes(songId)) {
-    service.songs = service.songs.filter(id => id !== songId);
-  } else {
-    service.songs.push(songId);
-  }
-
-  saveAll();
-  renderNotes();
-}
+/* ---------- MODO ALTAR ---------- */
+altarModeBtn.addEventListener("click", () => {
+  altarMode = !altarMode;
+  document.body.classList.toggle("altar-mode", altarMode);
+  altarModeBtn.textContent = altarMode
+    ? "❌ Salir Modo Altar"
+    : "🎹 Activar Modo Altar";
+});
 
 /* ---------- INIT ---------- */
 renderServices();
