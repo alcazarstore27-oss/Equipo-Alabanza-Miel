@@ -1,136 +1,98 @@
-const notesList = document.getElementById("notesList");
-const newNoteBtn = document.getElementById("newNoteBtn");
-const newServiceBtn = document.getElementById("newServiceBtn");
-const serviceSelect = document.getElementById("serviceSelect");
-const altarModeBtn = document.getElementById("altarModeBtn");
+const songList = document.getElementById("songList");
+const newSongBtn = document.getElementById("newSongBtn");
+const altarBtn = document.getElementById("altarBtn");
+const searchInput = document.getElementById("searchInput");
 
 const editor = document.getElementById("editor");
 const editorTitle = document.getElementById("editorTitle");
-const editorContent = document.getElementById("editorContent");
-const saveNoteBtn = document.getElementById("saveNoteBtn");
-const closeEditorBtn = document.getElementById("closeEditorBtn");
+const editorText = document.getElementById("editorText");
+const saveBtn = document.getElementById("saveBtn");
+const backBtn = document.getElementById("backBtn");
 
-let notes = JSON.parse(localStorage.getItem("alabanzaNotes")) || [];
-let services = JSON.parse(localStorage.getItem("alabanzaServices")) || [];
-let selectedService = "";
+let songs = JSON.parse(localStorage.getItem("songs")) || [];
+let currentSongId = null;
 let altarMode = false;
-let editingNoteId = null;
 
 /* ---------- GUARDAR ---------- */
-function saveAll() {
-  localStorage.setItem("alabanzaNotes", JSON.stringify(notes));
-  localStorage.setItem("alabanzaServices", JSON.stringify(services));
+function saveSongs() {
+  localStorage.setItem("songs", JSON.stringify(songs));
 }
 
-/* ---------- SERVICIOS ---------- */
-function renderServices() {
-  serviceSelect.innerHTML = `<option value="">— Ver todas las canciones —</option>`;
-  services.forEach(service => {
-    const option = document.createElement("option");
-    option.value = service.id;
-    option.textContent = service.name;
-    serviceSelect.appendChild(option);
-  });
-}
+/* ---------- RENDER ---------- */
+function renderSongs(filter = "") {
+  songList.innerHTML = "";
 
-/* ---------- CANCIONES ---------- */
-function renderNotes() {
-  notesList.innerHTML = "";
-
-  let visibleNotes = notes;
-
-  if (selectedService) {
-    const service = services.find(s => s.id === selectedService);
-    if (service) {
-      visibleNotes = notes.filter(n => service.songs.includes(n.id));
-    }
-  }
-
-  visibleNotes.forEach(note => {
-    const div = document.createElement("div");
-    div.className = "note";
-    div.innerHTML = `
-      <h3>${note.title}</h3>
-      <pre>${note.content || ""}</pre>
-    `;
-    div.addEventListener("click", () => openEditor(note.id));
-    notesList.appendChild(div);
-  });
+  songs
+    .filter(s => s.title.toLowerCase().includes(filter.toLowerCase()))
+    .forEach(song => {
+      const div = document.createElement("div");
+      div.className = "song";
+      div.innerHTML = `
+        <h3>${song.title}</h3>
+        <p>${song.content.slice(0, 40)}...</p>
+      `;
+      div.onclick = () => openEditor(song.id);
+      songList.appendChild(div);
+    });
 }
 
 /* ---------- NUEVA CANCIÓN ---------- */
-newNoteBtn.addEventListener("click", () => {
-  const title = prompt("🎵 Título de la canción:");
-  if (title) {
-    notes.push({
-      id: Date.now().toString(),
-      title,
-      content: ""
-    });
-    saveAll();
-    renderNotes();
-  }
-});
+newSongBtn.onclick = () => {
+  const title = prompt("Nombre de la canción:");
+  if (!title) return;
+
+  songs.push({
+    id: Date.now().toString(),
+    title,
+    content: ""
+  });
+
+  saveSongs();
+  renderSongs();
+};
 
 /* ---------- EDITOR ---------- */
 function openEditor(id) {
-  const note = notes.find(n => n.id === id);
-  if (!note) return;
+  const song = songs.find(s => s.id === id);
+  if (!song) return;
 
-  editingNoteId = id;
-  editorTitle.textContent = note.title;
-  editorContent.value = note.content;
+  currentSongId = id;
+  editorTitle.textContent = song.title;
+  editorText.value = song.content;
 
   editor.classList.remove("hidden");
-  notesList.classList.add("hidden");
+  songList.classList.add("hidden");
 }
 
-saveNoteBtn.addEventListener("click", () => {
-  const note = notes.find(n => n.id === editingNoteId);
-  if (!note) return;
+saveBtn.onclick = () => {
+  const song = songs.find(s => s.id === currentSongId);
+  if (!song) return;
 
-  note.content = editorContent.value;
-  saveAll();
+  song.content = editorText.value;
+  saveSongs();
   closeEditor();
-  renderNotes();
-});
+  renderSongs();
+};
 
-closeEditorBtn.addEventListener("click", closeEditor);
+backBtn.onclick = closeEditor;
 
 function closeEditor() {
   editor.classList.add("hidden");
-  notesList.classList.remove("hidden");
-  editingNoteId = null;
+  songList.classList.remove("hidden");
+  currentSongId = null;
 }
 
-/* ---------- SERVICIOS ---------- */
-newServiceBtn.addEventListener("click", () => {
-  const name = prompt("📅 Nombre del servicio:");
-  if (name) {
-    services.push({
-      id: Date.now().toString(),
-      name,
-      songs: []
-    });
-    saveAll();
-    renderServices();
-  }
-});
+/* ---------- BUSCAR ---------- */
+searchInput.oninput = e => {
+  renderSongs(e.target.value);
+};
 
-serviceSelect.addEventListener("change", e => {
-  selectedService = e.target.value;
-  renderNotes();
-});
-
-/* ---------- MODO ALTAR ---------- */
-altarModeBtn.addEventListener("click", () => {
+/* ---------- MODO EN VIVO ---------- */
+altarBtn.onclick = () => {
   altarMode = !altarMode;
-  document.body.classList.toggle("altar-mode", altarMode);
-  altarModeBtn.textContent = altarMode
-    ? "❌ Salir Modo Altar"
-    : "🎹 Activar Modo Altar";
-});
+  document.body.classList.toggle("altar", altarMode);
+  altarBtn.textContent = altarMode ? "❌ Salir En Vivo" : "🎹 En Vivo";
+};
 
 /* ---------- INIT ---------- */
-renderServices();
-renderNotes();
+renderSongs();
