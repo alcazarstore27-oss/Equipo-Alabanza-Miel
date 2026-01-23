@@ -45,14 +45,25 @@ button.danger {
 .song {
   background: white;
   color: black;
-  padding: 16px;
+  padding: 14px;
   border-radius: 12px;
-  margin-bottom: 14px;
-  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.song-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .song h3 {
   margin: 0;
+}
+
+.order-buttons button {
+  padding: 6px 10px;
+  margin-left: 6px;
+  font-size: 14px;
 }
 
 .editor {
@@ -78,10 +89,11 @@ button.danger {
   display: none;
 }
 
-/* ===== MODO EN VIVO ===== */
+/* MODO EN VIVO */
 body.altar .header,
 body.altar .actions,
-body.altar .editor {
+body.altar .editor,
+body.altar .order-buttons {
   display: none;
 }
 
