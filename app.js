@@ -15,6 +15,7 @@ const songType = document.getElementById("songType");
 const songService = document.getElementById("songService");
 const saveBtn = document.getElementById("saveBtn");
 const backBtn = document.getElementById("backBtn");
+const deleteSongBtn = document.getElementById("deleteSongBtn");
 
 const serviceLive = document.getElementById("serviceLive");
 const exitServiceBtn = document.getElementById("exitServiceBtn");
@@ -51,16 +52,14 @@ function renderServices() {
   });
 }
 
-// ===== LISTA PRINCIPAL =====
+// ===== LISTA =====
 function renderSongs() {
   songList.innerHTML = "";
 
   let list = songs;
   if (currentServiceId) {
     const srv = services.find(s => s.id === currentServiceId);
-    if (srv) {
-      list = srv.order.map(id => songs.find(s => s.id === id)).filter(Boolean);
-    }
+    if (srv) list = srv.order.map(id => songs.find(s => s.id === id)).filter(Boolean);
   }
 
   list.forEach(song => {
@@ -103,16 +102,12 @@ saveBtn.onclick = () => {
 
   if (prevService) {
     const oldSrv = services.find(s => s.id === prevService);
-    if (oldSrv) {
-      oldSrv.order = oldSrv.order.filter(id => id !== song.id);
-    }
+    if (oldSrv) oldSrv.order = oldSrv.order.filter(id => id !== song.id);
   }
 
   if (song.serviceId) {
     const srv = services.find(s => s.id === song.serviceId);
-    if (srv && !srv.order.includes(song.id)) {
-      srv.order.push(song.id);
-    }
+    if (srv && !srv.order.includes(song.id)) srv.order.push(song.id);
   }
 
   saveData();
@@ -120,6 +115,21 @@ saveBtn.onclick = () => {
 };
 
 backBtn.onclick = closeEditor;
+
+// ===== ELIMINAR CANCIÓN =====
+deleteSongBtn.onclick = () => {
+  if (!currentSongId) return;
+  if (!confirm("¿Eliminar esta canción?")) return;
+
+  songs = songs.filter(s => s.id !== currentSongId);
+  services.forEach(s => {
+    s.order = s.order.filter(id => id !== currentSongId);
+  });
+
+  currentSongId = null;
+  saveData();
+  closeEditor();
+};
 
 // ===== NUEVA CANCIÓN =====
 newSongBtn.onclick = () => {
@@ -138,7 +148,7 @@ newSongBtn.onclick = () => {
   renderSongs();
 };
 
-// ===== NUEVO SERVICIO =====
+// ===== SERVICIOS =====
 newServiceBtn.onclick = () => {
   const date = prompt("Fecha del servicio");
   if (!date) return;
@@ -153,7 +163,6 @@ newServiceBtn.onclick = () => {
   renderServices();
 };
 
-// ===== ELIMINAR SERVICIO =====
 deleteServiceBtn.onclick = () => {
   if (!currentServiceId) return;
   if (!confirm("¿Eliminar este servicio?")) return;
@@ -170,7 +179,6 @@ deleteServiceBtn.onclick = () => {
   renderSongs();
 };
 
-// ===== SELECCIONAR SERVICIO =====
 serviceSelect.onchange = e => {
   currentServiceId = e.target.value;
   renderSongs();
@@ -255,3 +263,4 @@ exitServiceBtn.onclick = () => {
 // ===== INIT =====
 renderServices();
 renderSongs();
+
