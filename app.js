@@ -1,3 +1,4 @@
+// ===== ELEMENTOS =====
 const songList = document.getElementById("songList");
 const newSongBtn = document.getElementById("newSongBtn");
 const newServiceBtn = document.getElementById("newServiceBtn");
@@ -8,7 +9,6 @@ const editor = document.getElementById("editor");
 const editorTitle = document.getElementById("editorTitle");
 const editorText = document.getElementById("editorText");
 const songType = document.getElementById("songType");
-const serviceCheckboxes = document.getElementById("serviceCheckboxes");
 const saveBtn = document.getElementById("saveBtn");
 const backBtn = document.getElementById("backBtn");
 
@@ -16,6 +16,7 @@ const liveView = document.getElementById("liveView");
 const liveContent = document.getElementById("liveContent");
 const exitLive = document.getElementById("exitLive");
 
+// ===== DATOS =====
 let songs = JSON.parse(localStorage.getItem("songs")) || [];
 let services = JSON.parse(localStorage.getItem("services")) || [];
 
@@ -23,37 +24,45 @@ let currentSongId = null;
 let currentService = "";
 let altarMode = false;
 
+// ===== GUARDAR =====
 function saveData() {
   localStorage.setItem("songs", JSON.stringify(songs));
   localStorage.setItem("services", JSON.stringify(services));
 }
 
-function renderServicesSelect() {
+// ===== SERVICIOS =====
+function renderServices() {
   serviceSelect.innerHTML = `<option value="">— Ver todas —</option>`;
-  services.forEach(s => {
+  services.forEach(service => {
     const opt = document.createElement("option");
-    opt.value = s.id;
-    opt.textContent = s.date;
+    opt.value = service.id;
+    opt.textContent = service.date;
     serviceSelect.appendChild(opt);
   });
 }
 
+// ===== CANCIONES =====
 function renderSongs() {
   songList.innerHTML = "";
 
-  let list = songs;
+  let list = [...songs];
+
   if (currentService) {
     const srv = services.find(s => s.id === currentService);
-    list = srv.order.map(id => songs.find(s => s.id === id)).filter(Boolean);
+    if (srv) {
+      list = srv.order
+        .map(id => songs.find(song => song.id === id))
+        .filter(Boolean);
+    }
   }
 
-  const alab = list.filter(s => s.type === "alabanza");
-  const ador = list.filter(s => s.type === "adoracion");
-  const sin = list.filter(s => !s.type);
+  const alabanza = list.filter(s => s.type === "alabanza");
+  const adoracion = list.filter(s => s.type === "adoracion");
+  const sinTipo = list.filter(s => !s.type);
 
-  renderBlock("🎶 Alabanza", alab);
-  renderBlock("🙏 Adoración", ador);
-  renderBlock("📌 Sin clasificar", sin);
+  renderBlock("🎶 Alabanza", alabanza);
+  renderBlock("🙏 Adoración", adoracion);
+  renderBlock("📌 Sin clasificar", sinTipo);
 }
 
 function renderBlock(title, list) {
@@ -82,6 +91,7 @@ function renderBlock(title, list) {
   });
 }
 
+// ===== EDITOR =====
 function openEditor(id) {
   const song = songs.find(s => s.id === id);
   if (!song) return;
@@ -92,43 +102,14 @@ function openEditor(id) {
   editorText.value = song.content || "";
   songType.value = song.type || "";
 
-  renderServiceCheckboxes(song);
-
-  editor.classList.remove("hidden");
   songList.classList.add("hidden");
-}
-
-function renderServiceCheckboxes(song) {
-  serviceCheckboxes.innerHTML = "";
-
-  services.forEach(service => {
-    const label = document.createElement("label");
-    label.style.display = "block";
-
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = service.order.includes(song.id);
-
-    checkbox.onchange = () => {
-      if (checkbox.checked) {
-        if (!service.order.includes(song.id)) {
-          service.order.push(song.id);
-        }
-      } else {
-        service.order = service.order.filter(id => id !== song.id);
-      }
-      saveData();
-    };
-
-    label.appendChild(checkbox);
-    label.append(" " + service.date);
-    serviceCheckboxes.appendChild(label);
-  });
+  editor.classList.remove("hidden");
 }
 
 function closeEditor() {
   editor.classList.add("hidden");
   songList.classList.remove("hidden");
+  currentSongId = null;
 }
 
 saveBtn.onclick = () => {
@@ -145,6 +126,7 @@ saveBtn.onclick = () => {
 
 backBtn.onclick = closeEditor;
 
+// ===== NUEVA CANCIÓN =====
 newSongBtn.onclick = () => {
   const title = prompt("Nombre de la canción");
   if (!title) return;
@@ -159,9 +141,12 @@ newSongBtn.onclick = () => {
   songs.push(newSong);
   saveData();
   renderSongs();
+
+  // 👉 ABRIR DIRECTAMENTE EL EDITOR
   openEditor(newSong.id);
 };
 
+// ===== NUEVO SERVICIO =====
 newServiceBtn.onclick = () => {
   const date = prompt("Fecha del servicio");
   if (!date) return;
@@ -169,18 +154,20 @@ newServiceBtn.onclick = () => {
   services.push({
     id: Date.now().toString(),
     date,
-    order: []
+    order: songs.map(s => s.id)
   });
 
   saveData();
-  renderServicesSelect();
+  renderServices();
 };
 
+// ===== FILTRO POR SERVICIO =====
 serviceSelect.onchange = e => {
   currentService = e.target.value;
   renderSongs();
 };
 
+// ===== MODO EN VIVO =====
 altarBtn.onclick = () => {
   altarMode = !altarMode;
   altarBtn.textContent = altarMode ? "❌ Salir En Vivo" : "🎹 En Vivo";
@@ -190,5 +177,6 @@ exitLive.onclick = () => {
   liveView.classList.add("hidden");
 };
 
-renderServicesSelect();
+// ===== INICIO =====
+renderServices();
 renderSongs();
