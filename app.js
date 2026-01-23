@@ -1,4 +1,4 @@
-// ===== ELEMENTOS =====
+ // ===== ELEMENTOS =====
 const songList = document.getElementById("songList");
 const serviceSongList = document.getElementById("serviceSongList");
 const serviceLiveTitle = document.getElementById("serviceLiveTitle");
@@ -39,8 +39,8 @@ function saveData() {
 
 // ===== SERVICIOS =====
 function renderServices() {
-  serviceSelect.innerHTML = `<option value="">— Ver todas —</option>`;
-  songService.innerHTML = `<option value="">— Sin asignar —</option>`;
+  serviceSelect.innerHTML = <option value="">— Ver todas —</option>;
+  songService.innerHTML = <option value="">— Sin asignar —</option>;
 
   services.forEach(s => {
     const opt1 = document.createElement("option");
@@ -119,24 +119,6 @@ saveBtn.onclick = () => {
 
 backBtn.onclick = closeEditor;
 
-// ===== ELIMINAR CANCIÓN (ARREGLADO) =====
-deleteSongBtn.onclick = () => {
-  if (!currentSongId) return;
-  if (!confirm("¿Eliminar esta canción?")) return;
-
-  // quitar de todos los servicios
-  services.forEach(srv => {
-    srv.order = srv.order.filter(id => id !== currentSongId);
-  });
-
-  // eliminar canción
-  songs = songs.filter(s => s.id !== currentSongId);
-
-  currentSongId = null;
-  saveData();
-  closeEditor();
-};
-
 // ===== NUEVA CANCIÓN =====
 newSongBtn.onclick = () => {
   const title = prompt("Nombre de la canción");
@@ -198,7 +180,7 @@ serviceLiveBtn.onclick = () => {
   }
 
   const srv = services.find(s => s.id === currentServiceId);
-  serviceLiveTitle.textContent = `🎹 Servicio en Vivo – ${srv.date}`;
+  serviceLiveTitle.textContent = 🎹 Servicio en Vivo – ${srv.date};
 
   serviceLive.classList.remove("hidden");
   songList.classList.add("hidden");
