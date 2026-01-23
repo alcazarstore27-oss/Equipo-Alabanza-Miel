@@ -22,7 +22,7 @@ function saveAll() {
   localStorage.setItem("alabanzaServices", JSON.stringify(services));
 }
 
-/* ---------- RENDER SERVICIOS ---------- */
+/* ---------- SERVICIOS ---------- */
 function renderServices() {
   serviceSelect.innerHTML = `<option value="">— Ver todas las canciones —</option>`;
   services.forEach(service => {
@@ -33,7 +33,7 @@ function renderServices() {
   });
 }
 
-/* ---------- RENDER CANCIONES ---------- */
+/* ---------- CANCIONES ---------- */
 function renderNotes() {
   notesList.innerHTML = "";
 
@@ -53,7 +53,6 @@ function renderNotes() {
       <h3>${note.title}</h3>
       <pre>${note.content || ""}</pre>
     `;
-
     div.addEventListener("click", () => openEditor(note.id));
     notesList.appendChild(div);
   });
@@ -62,7 +61,6 @@ function renderNotes() {
 /* ---------- NUEVA CANCIÓN ---------- */
 newNoteBtn.addEventListener("click", () => {
   const title = prompt("🎵 Título de la canción:");
-
   if (title) {
     notes.push({
       id: Date.now().toString(),
@@ -75,13 +73,13 @@ newNoteBtn.addEventListener("click", () => {
 });
 
 /* ---------- EDITOR ---------- */
-function openEditor(noteId) {
-  const note = notes.find(n => n.id === noteId);
+function openEditor(id) {
+  const note = notes.find(n => n.id === id);
   if (!note) return;
 
-  editingNoteId = noteId;
+  editingNoteId = id;
   editorTitle.textContent = note.title;
-  editorContent.value = note.content || "";
+  editorContent.value = note.content;
 
   editor.classList.remove("hidden");
   notesList.classList.add("hidden");
