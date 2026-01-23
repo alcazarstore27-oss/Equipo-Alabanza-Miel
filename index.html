@@ -3,79 +3,65 @@
 <head>
   <meta charset="UTF-8" />
   <title>Equipo Alabanza Miel</title>
-
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#3FB4E5" />
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#3FB4E5">
 
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-  <!-- ===== HEADER ===== -->
-  <header class="header">
-    <img
-      src="icons/logo.png"
-      alt="Equipo Alabanza Miel"
-      class="logo"
-    />
-    <h1>Equipo Alabanza Miel</h1>
-  </header>
+<header class="header">
+  <img src="icons/logo.png" class="logo">
+  <h1>Equipo Alabanza Miel</h1>
+</header>
 
-  <!-- ===== ACCIONES ===== -->
-  <section class="actions">
-    <input id="searchInput" placeholder="🔍 Buscar canción" />
+<section class="actions">
+  <button id="newSongBtn">➕ Nueva Canción</button>
+  <button id="newServiceBtn">📅 Nuevo Servicio</button>
 
-    <button id="newSongBtn">➕ Nueva Canción</button>
-    <button id="newServiceBtn">📅 Nuevo Servicio</button>
+  <select id="serviceSelect">
+    <option value="">— Seleccionar servicio —</option>
+  </select>
 
-    <select id="serviceSelect">
-      <option value="">— Ver todas las canciones —</option>
-    </select>
+  <button id="serviceLiveBtn">🎼 Servicio en Vivo</button>
+</section>
 
-    <button id="altarBtn">🎹 En Vivo</button>
-  </section>
+<main id="songList"></main>
 
-  <!-- ===== LISTA DE CANCIONES ===== -->
-  <main id="songList"></main>
+<!-- ===== EDITOR ===== -->
+<section id="editor" class="editor hidden">
+  <h2 id="editorTitle"></h2>
 
-  <!-- ===== EDITOR ===== -->
-  <section id="editor" class="editor hidden">
-    <h2 id="editorTitle"></h2>
+  <select id="songType">
+    <option value="">— Tipo —</option>
+    <option value="alabanza">🎶 Alabanza</option>
+    <option value="adoracion">🙏 Adoración</option>
+  </select>
 
-    <label><strong>Tipo de canción</strong></label>
-    <select id="songType">
-      <option value="">— Seleccionar —</option>
-      <option value="alabanza">🎶 Alabanza</option>
-      <option value="adoracion">🙏 Adoración</option>
-    </select>
+  <textarea id="editorText" placeholder="Letra, acordes, estructura..."></textarea>
 
-    <textarea
-      id="editorText"
-      placeholder="Estructura, acordes y notas..."
-    ></textarea>
+  <button id="saveBtn">💾 Guardar</button>
+  <button id="backBtn">⬅ Volver</button>
+</section>
 
-    <button id="saveBtn">💾 Guardar</button>
-    <button id="backBtn">⬅ Volver</button>
-  </section>
+<!-- ===== SERVICIO EN VIVO (ORDEN) ===== -->
+<section id="serviceLive" class="hidden">
+  <h2>🎼 Orden del Servicio</h2>
+  <div id="serviceSongList"></div>
 
-  <!-- ===== MODO EN VIVO ===== -->
-  <section id="liveView" class="live hidden">
-    <pre id="liveContent"></pre>
-    <button id="exitLive">❌ Salir</button>
-  </section>
+  <button id="goLiveBtn">🎹 Ahora sí En Vivo</button>
+  <button id="exitServiceBtn">❌ Terminar Servicio</button>
+</section>
 
-  <!-- ===== SERVICE WORKER ===== -->
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./service-worker.js");
-    }
-  </script>
+<!-- ===== MODO EN VIVO ===== -->
+<section id="liveView" class="live hidden">
+  <pre id="liveContent"></pre>
+</section>
 
-  <script src="app.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
 
