@@ -42,30 +42,83 @@ function renderServices() {
   deleteServiceBtn.classList.toggle("hidden", !currentService);
 }
 
+/* ---------- ORDEN DEL SERVICIO ---------- */
+function getOrderedSongs() {
+  if (!currentService) return songs;
+
+  const service = services.find(s => s.id === currentService);
+  if (!service) return songs;
+
+  service.order = service.order || [];
+
+  const ordered = [];
+  service.order.forEach(id => {
+    const song = songs.find(s => s.id === id);
+    if (song) ordered.push(song);
+  });
+
+  const remaining = songs.filter(
+    s => s.services.includes(currentService) &&
+         !service.order.includes(s.id)
+  );
+
+  return ordered.concat(remaining);
+}
+
 /* ---------- CANCIONES ---------- */
 function renderSongs(filter = "") {
   songList.innerHTML = "";
 
-  let visibleSongs = songs;
-
-  if (currentService) {
-    visibleSongs = songs.filter(s =>
-      s.services.includes(currentService)
-    );
-  }
+  let visibleSongs = currentService
+    ? getOrderedSongs()
+    : songs;
 
   visibleSongs
     .filter(s =>
       s.title.toLowerCase().includes(filter.toLowerCase())
     )
-    .forEach(song => {
+    .forEach((song, index) => {
       const div = document.createElement("div");
       div.className = "song";
-      div.innerHTML = `<h3>${song.title}</h3>`;
+
+      div.innerHTML = `
+        <div class="song-header">
+          <h3>${song.title}</h3>
+          ${currentService ? `
+          <div class="order-buttons">
+            <button onclick="moveSong('${song.id}', -1)">⬆️</button>
+            <button onclick="moveSong('${song.id}', 1)">⬇️</button>
+          </div>` : ""}
+        </div>
+      `;
+
       div.onclick = () => openEditor(song.id);
       songList.appendChild(div);
     });
 }
+
+/* ---------- MOVER CANCIÓN ---------- */
+window.moveSong = function (songId, direction) {
+  const service = services.find(s => s.id === currentService);
+  if (!service) return;
+
+  service.order = service.order || [];
+
+  if (!service.order.includes(songId)) {
+    service.order.push(songId);
+  }
+
+  const idx = service.order.indexOf(songId);
+  const newIdx = idx + direction;
+
+  if (newIdx < 0 || newIdx >= service.order.length) return;
+
+  [service.order[idx], service.order[newIdx]] =
+    [service.order[newIdx], service.order[idx]];
+
+  saveAll();
+  renderSongs();
+};
 
 /* ---------- NUEVA CANCIÓN ---------- */
 newSongBtn.onclick = () => {
@@ -90,7 +143,8 @@ newServiceBtn.onclick = () => {
 
   services.push({
     id: Date.now().toString(),
-    date
+    date,
+    order: []
   });
 
   saveAll();
@@ -104,18 +158,11 @@ deleteServiceBtn.onclick = () => {
   const service = services.find(s => s.id === currentService);
   if (!service) return;
 
-  const ok = confirm(
-    `¿Borrar el servicio del ${service.date}?\nLas canciones NO se eliminarán.`
-  );
-
-  if (!ok) return;
+  if (!confirm(`¿Borrar el servicio ${service.date}?`)) return;
 
   services = services.filter(s => s.id !== currentService);
-
   songs.forEach(song => {
-    song.services = song.services.filter(
-      id => id !== currentService
-    );
+    song.services = song.services.filter(id => id !== currentService);
   });
 
   currentService = "";
@@ -188,9 +235,8 @@ serviceSelect.onchange = e => {
 altarBtn.onclick = () => {
   altarMode = !altarMode;
   document.body.classList.toggle("altar", altarMode);
-  altarBtn.textContent = altarMode
-    ? "❌ Salir En Vivo"
-    : "🎹 En Vivo";
+  altarBtn.textContent =
+    altarMode ? "❌ Salir En Vivo" : "🎹 En Vivo";
 };
 
 /* ---------- INIT ---------- */
