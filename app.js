@@ -221,7 +221,7 @@ function renderServiceBlock(titleText, list, srv) {
     row.style.gap = "8px";
 
     const label = document.createElement("span");
-    label.textContent = `${index + 1}. ${song.title}`;
+    label.textContent = song.title;
     label.style.flex = "1";
 
     const up = document.createElement("button");
@@ -270,4 +270,6 @@ exitServiceBtn.onclick = () => {
 };
 
 // ===== INIT =====
-renderServ
+renderServices();
+renderSongs();
+
