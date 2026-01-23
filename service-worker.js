@@ -1,4 +1,4 @@
-const CACHE_NAME = "equipo-alabanza-miel-v3";
+const CACHE_NAME = "equipo-alabanza-miel-v4";
 
 const FILES_TO_CACHE = [
   "./",
@@ -6,11 +6,10 @@ const FILES_TO_CACHE = [
   "./styles.css",
   "./app.js",
   "./manifest.json",
-  "./icons/logo-192.png",
-  "./icons/logo-512.png"
+  "./icons/logo.png"
 ];
 
-// INSTALACIÓN
+// ===== INSTALACIÓN =====
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
@@ -20,7 +19,7 @@ self.addEventListener("install", event => {
   self.skipWaiting();
 });
 
-// ACTIVACIÓN (limpia cachés viejos)
+// ===== ACTIVACIÓN =====
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -36,7 +35,7 @@ self.addEventListener("activate", event => {
   self.clients.claim();
 });
 
-// FETCH (offline first)
+// ===== FETCH (offline first) =====
 self.addEventListener("fetch", event => {
   event.respondWith(
     caches.match(event.request).then(response => {
