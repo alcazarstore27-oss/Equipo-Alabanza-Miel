@@ -1,8 +1,10 @@
+// ===== ELEMENTOS =====
 const songList = document.getElementById("songList");
 const serviceSongList = document.getElementById("serviceSongList");
 
 const newSongBtn = document.getElementById("newSongBtn");
 const newServiceBtn = document.getElementById("newServiceBtn");
+const deleteServiceBtn = document.getElementById("deleteServiceBtn");
 const serviceSelect = document.getElementById("serviceSelect");
 const serviceLiveBtn = document.getElementById("serviceLiveBtn");
 
@@ -20,11 +22,12 @@ const exitServiceBtn = document.getElementById("exitServiceBtn");
 const liveView = document.getElementById("liveView");
 const liveContent = document.getElementById("liveContent");
 
+// ===== DATOS =====
 let songs = JSON.parse(localStorage.getItem("songs")) || [];
 let services = JSON.parse(localStorage.getItem("services")) || [];
 
 let currentSongId = null;
-let currentServiceId = null;
+let currentServiceId = "";
 let dragId = null;
 
 // ===== GUARDAR =====
@@ -35,7 +38,7 @@ function saveData() {
 
 // ===== SERVICIOS =====
 function renderServices() {
-  serviceSelect.innerHTML = `<option value="">— Seleccionar servicio —</option>`;
+  serviceSelect.innerHTML = `<option value="">— Ver todas —</option>`;
   songService.innerHTML = `<option value="">— Sin asignar —</option>`;
 
   services.forEach(s => {
@@ -49,10 +52,22 @@ function renderServices() {
   });
 }
 
-// ===== LISTA PRINCIPAL =====
+// ===== LISTA DE CANCIONES (FILTRADA) =====
 function renderSongs() {
   songList.innerHTML = "";
-  songs.forEach(song => {
+
+  let list = songs;
+
+  if (currentServiceId) {
+    const srv = services.find(s => s.id === currentServiceId);
+    if (srv) {
+      list = srv.order
+        .map(id => songs.find(song => song.id === id))
+        .filter(Boolean);
+    }
+  }
+
+  list.forEach(song => {
     const div = document.createElement("div");
     div.className = "song";
     div.textContent = song.title;
@@ -75,23 +90,27 @@ function openEditor(id) {
   songList.classList.add("hidden");
 }
 
+function closeEditor() {
+  editor.classList.add("hidden");
+  songList.classList.remove("hidden");
+  renderSongs();
+}
+
 saveBtn.onclick = () => {
   const song = songs.find(s => s.id === currentSongId);
-  const previousService = song.serviceId;
+  const prevService = song.serviceId;
 
   song.content = editorText.value;
   song.type = songType.value;
   song.serviceId = songService.value;
 
-  // Quitar del servicio anterior
-  if (previousService) {
-    const oldSrv = services.find(s => s.id === previousService);
+  if (prevService) {
+    const oldSrv = services.find(s => s.id === prevService);
     if (oldSrv) {
       oldSrv.order = oldSrv.order.filter(id => id !== song.id);
     }
   }
 
-  // Agregar al nuevo servicio
   if (song.serviceId) {
     const srv = services.find(s => s.id === song.serviceId);
     if (srv && !srv.order.includes(song.id)) {
@@ -103,18 +122,13 @@ saveBtn.onclick = () => {
   closeEditor();
 };
 
-function closeEditor() {
-  editor.classList.add("hidden");
-  songList.classList.remove("hidden");
-  renderSongs();
-}
-
 backBtn.onclick = closeEditor;
 
 // ===== NUEVA CANCIÓN =====
 newSongBtn.onclick = () => {
   const title = prompt("Nombre de la canción");
   if (!title) return;
+
   songs.push({
     id: Date.now().toString(),
     title,
@@ -122,6 +136,7 @@ newSongBtn.onclick = () => {
     type: "",
     serviceId: ""
   });
+
   saveData();
   renderSongs();
 };
@@ -130,18 +145,48 @@ newSongBtn.onclick = () => {
 newServiceBtn.onclick = () => {
   const date = prompt("Fecha del servicio");
   if (!date) return;
+
   services.push({
     id: Date.now().toString(),
     date,
     order: []
   });
+
   saveData();
   renderServices();
 };
 
+// ===== ELIMINAR SERVICIO =====
+deleteServiceBtn.onclick = () => {
+  if (!currentServiceId) {
+    alert("Selecciona un servicio para eliminar");
+    return;
+  }
+
+  if (!confirm("¿Eliminar este servicio?")) return;
+
+  services = services.filter(s => s.id !== currentServiceId);
+
+  songs.forEach(song => {
+    if (song.serviceId === currentServiceId) {
+      song.serviceId = "";
+    }
+  });
+
+  currentServiceId = "";
+  saveData();
+  renderServices();
+  renderSongs();
+};
+
+// ===== SELECCIONAR SERVICIO =====
+serviceSelect.onchange = e => {
+  currentServiceId = e.target.value;
+  renderSongs();
+};
+
 // ===== SERVICIO EN VIVO =====
 serviceLiveBtn.onclick = () => {
-  currentServiceId = serviceSelect.value;
   if (!currentServiceId) {
     alert("Selecciona un servicio");
     return;
@@ -184,12 +229,12 @@ function renderServiceSongs() {
   });
 }
 
-// ===== MODO EN VIVO =====
+// ===== EN VIVO =====
 liveView.onclick = () => {
   liveView.classList.add("hidden");
 };
 
-// ===== SALIR =====
+// ===== SALIR SERVICIO =====
 exitServiceBtn.onclick = () => {
   serviceLive.classList.add("hidden");
   songList.classList.remove("hidden");
