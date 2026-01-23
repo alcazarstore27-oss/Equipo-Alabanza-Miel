@@ -11,7 +11,7 @@ body {
 }
 
 .logo {
-  width: 110px;
+  width: 100px;
   margin-bottom: 6px;
 }
 
@@ -20,25 +20,14 @@ body {
   width: 100%;
   padding: 14px;
   margin-bottom: 10px;
-  font-size: 16px;
   border-radius: 10px;
   border: none;
+  font-size: 16px;
 }
 
 .actions button {
   background: white;
   color: #3FB4E5;
-  font-weight: bold;
-}
-
-button.danger {
-  background: #e53935;
-  color: white;
-}
-
-.block-title {
-  margin-top: 20px;
-  font-size: 20px;
   font-weight: bold;
 }
 
@@ -51,8 +40,10 @@ button.danger {
   cursor: grab;
 }
 
-.song.dragging {
-  opacity: 0.5;
+.block-title {
+  margin-top: 20px;
+  font-size: 20px;
+  font-weight: bold;
 }
 
 .editor {
@@ -62,12 +53,11 @@ button.danger {
   border-radius: 12px;
 }
 
-.editor select,
-.editor textarea {
+.editor textarea,
+.editor select {
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
-  font-size: 16px;
 }
 
 .editor textarea {
@@ -76,6 +66,11 @@ button.danger {
 
 .hidden {
   display: none;
+}
+
+/* ===== SERVICIO EN VIVO ===== */
+#serviceLive {
+  background: #3FB4E5;
 }
 
 /* ===== MODO EN VIVO ===== */
@@ -90,14 +85,6 @@ button.danger {
 
 .live pre {
   white-space: pre-wrap;
-  font-size: 22px;
+  font-size: 24px;
   line-height: 1.6;
-}
-
-.live button {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  padding: 12px 18px;
-  font-size: 18px;
 }
