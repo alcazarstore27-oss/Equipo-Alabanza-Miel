@@ -119,6 +119,24 @@ saveBtn.onclick = () => {
 
 backBtn.onclick = closeEditor;
 
+// ===== ELIMINAR CANCIÓN (ARREGLADO) =====
+deleteSongBtn.onclick = () => {
+  if (!currentSongId) return;
+  if (!confirm("¿Eliminar esta canción?")) return;
+
+  // quitar de todos los servicios
+  services.forEach(srv => {
+    srv.order = srv.order.filter(id => id !== currentSongId);
+  });
+
+  // eliminar canción
+  songs = songs.filter(s => s.id !== currentSongId);
+
+  currentSongId = null;
+  saveData();
+  closeEditor();
+};
+
 // ===== NUEVA CANCIÓN =====
 newSongBtn.onclick = () => {
   const title = prompt("Nombre de la canción");
@@ -266,10 +284,4 @@ liveView.onclick = () => {
 // ===== SALIR =====
 exitServiceBtn.onclick = () => {
   serviceLive.classList.add("hidden");
-  songList.classList.remove("hidden");
-};
-
-// ===== INIT =====
-renderServices();
-renderSongs();
-
+  songList.classList.remove("hidd
