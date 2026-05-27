@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>Equipo Alabanza Miel</title>
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -16,53 +18,110 @@
 </header>
 
 <section class="actions">
-  <button id="newSongBtn">➕ Nueva Canción</button>
-  <button id="newServiceBtn">📅 Nuevo Servicio</button>
-  <button id="deleteServiceBtn">🗑 Eliminar Servicio</button>
+
+  <!-- ===== BUSCADOR ===== -->
+  <input
+    type="text"
+    id="searchInput"
+    placeholder="🔍 Buscar canción..."
+  >
+
+  <button id="newSongBtn">
+    ➕ Nueva Canción
+  </button>
+
+  <button id="newServiceBtn">
+    📅 Nuevo Servicio
+  </button>
+
+  <button id="deleteServiceBtn">
+    🗑 Eliminar Servicio
+  </button>
 
   <select id="serviceSelect">
-    <option value="">— Ver todas —</option>
+    <option value="">
+      — Ver todas —
+    </option>
   </select>
 
-  <button id="serviceLiveBtn">🎹 Servicio en Vivo</button>
+  <button id="serviceLiveBtn">
+    🎹 Servicio en Vivo
+  </button>
+
 </section>
 
 <main id="songList"></main>
 
 <!-- ===== EDITOR ===== -->
 <section id="editor" class="editor hidden">
+
   <h2 id="editorTitle"></h2>
 
-  <label><strong>Servicio</strong></label>
+  <label>
+    <strong>Servicio</strong>
+  </label>
+
   <select id="songService"></select>
 
-  <label><strong>Tipo de canción</strong></label>
+  <label>
+    <strong>Tipo de canción</strong>
+  </label>
+
   <select id="songType">
-    <option value="">— Seleccionar —</option>
-    <option value="alabanza">🎶 Alabanza</option>
-    <option value="adoracion">🙏 Adoración</option>
+    <option value="">
+      — Seleccionar —
+    </option>
+
+    <option value="alabanza">
+      🎶 Alabanza
+    </option>
+
+    <option value="adoracion">
+      🙏 Adoración
+    </option>
   </select>
 
-  <textarea id="editorText"
-    placeholder="Estructura, acordes y notas..."></textarea>
+  <textarea
+    id="editorText"
+    placeholder="Estructura, acordes y notas..."
+  ></textarea>
 
-  <button id="saveBtn">💾 Guardar</button>
-  <button id="deleteSongBtn" class="danger">🗑 Eliminar canción</button>
-  <button id="backBtn">⬅ Volver</button>
+  <button id="saveBtn">
+    💾 Guardar
+  </button>
+
+  <button
+    id="deleteSongBtn"
+    class="danger"
+  >
+    🗑 Eliminar canción
+  </button>
+
+  <button id="backBtn">
+    ⬅ Volver
+  </button>
+
 </section>
 
 <!-- ===== SERVICIO EN VIVO ===== -->
 <section id="serviceLive" class="editor hidden">
+
   <h2 id="serviceLiveTitle"></h2>
+
   <div id="serviceSongList"></div>
-  <button id="exitServiceBtn">⬅ Volver</button>
+
+  <button id="exitServiceBtn">
+    ⬅ Volver
+  </button>
+
 </section>
 
-<!-- ===== PANTALLA NEGRA ===== -->
+<!-- ===== MODO EN VIVO ===== -->
 <section id="liveView" class="live hidden">
   <pre id="liveContent"></pre>
 </section>
 
 <script src="app.js"></script>
+
 </body>
 </html>
