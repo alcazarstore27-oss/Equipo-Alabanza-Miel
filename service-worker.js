@@ -1,4 +1,4 @@
-const CACHE_NAME = "equipo-alabanza-miel-v6";
+const CACHE_NAME = "equipo-alabanza-miel-v7";
 
 const FILES_TO_CACHE = [
   "./",
@@ -16,22 +16,24 @@ self.addEventListener("install", event => {
       return cache.addAll(FILES_TO_CACHE);
     })
   );
+
   self.skipWaiting();
 });
 
 // ===== ACTIVAR =====
 self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
+    caches.keys().then(keys => {
+      return Promise.all(
         keys.map(key => {
           if (key !== CACHE_NAME) {
             return caches.delete(key);
           }
         })
-      )
-    )
+      );
+    })
   );
+
   self.clients.claim();
 });
 
