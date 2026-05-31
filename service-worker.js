@@ -1,4 +1,4 @@
-const CACHE_NAME = "equipo-alabanza-miel-v8";
+const CACHE_NAME = "equipo-alabanza-miel-v9";
 
 const FILES_TO_CACHE = [
   "./",
