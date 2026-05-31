@@ -15,6 +15,7 @@ body {
   margin-bottom: 6px;
 }
 
+.actions input,
 .actions button,
 .actions select {
   width: 100%;
@@ -23,6 +24,7 @@ body {
   border-radius: 10px;
   border: none;
   font-size: 16px;
+  box-sizing: border-box;
 }
 
 .actions button {
@@ -37,7 +39,7 @@ body {
   padding: 14px;
   border-radius: 10px;
   margin-bottom: 10px;
-  cursor: grab;
+  cursor: pointer;
 }
 
 .block-title {
@@ -58,6 +60,7 @@ body {
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
+  box-sizing: border-box;
 }
 
 .editor textarea {
@@ -68,23 +71,40 @@ body {
   display: none;
 }
 
+button.danger {
+  background: #d32f2f;
+  color: white;
+}
+
 /* ===== SERVICIO EN VIVO ===== */
+
 #serviceLive {
   background: #3FB4E5;
 }
 
-/* ===== MODO EN VIVO ===== */
+/* ===== PANTALLA NEGRA ===== */
+
 .live {
   position: fixed;
   inset: 0;
   background: black;
   color: white;
+  z-index: 9999;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
   padding: 20px;
-  z-index: 1000;
+  box-sizing: border-box;
 }
 
 .live pre {
   white-space: pre-wrap;
+  word-wrap: break-word;
+
   font-size: 24px;
-  line-height: 1.6;
+  line-height: 1.7;
+
+  margin: 0;
+  padding-bottom: 120px;
 }
